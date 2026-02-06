@@ -1,7 +1,7 @@
 import {PiMicrophoneStage, PiVinylRecord} from "react-icons/pi";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
-import { GrStatusUnknown } from "react-icons/gr";
+import {GrStatusUnknown} from "react-icons/gr";
 
 type Props = { isVisible: boolean };
 
@@ -45,18 +45,18 @@ export default function FadeInMenu({isVisible}: Props) {
              aria-hidden={!isVisible}
         >
             <ul className="menu rounded-box w-56">
-                {menuItems.map(item => {
+                {menuItems.map((item, index) => {
                     switch (item.type) {
-                        case 'Title': return <li className="menu-title">{item.text}</li>;
+                        case 'Title': return <li key={index} className="menu-title">{item.text}</li>;
                         case 'MenuItem': {
                             const Icon = item.icon ?? GrStatusUnknown;
                             return (
-                                <li className={pathname === item.path ? "menu-active" : ""}>
+                                <li key={index} className={pathname === item.path ? "menu-active" : ""}>
                                     <Link href={item.path ?? pathname}><Icon className="h-5 w-5"/> {item.text}</Link>
                                 </li>
                             );
                         }
-                        case 'Divider': return <li className="ui-menu-divider"></li>;
+                        case 'Divider': return <li key={index} className="ui-menu-divider"></li>;
                     }
                 })}
             </ul>

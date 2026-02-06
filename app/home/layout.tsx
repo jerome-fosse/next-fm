@@ -1,7 +1,7 @@
 'use client'
 
-import NavigationBar from "@/app/ui/navbar";
-import FadeInMenu from "@/app/ui/fade-in-menu";
+import NavigationBar from "@/app/ui/dashboard/navbar";
+import FadeInMenu from "@/app/ui/dashboard/fade-in-menu";
 import {useState} from "react";
 
 export default function Layout({children}: Readonly<{ children: React.ReactNode; }>) {
