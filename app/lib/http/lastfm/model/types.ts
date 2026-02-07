@@ -90,6 +90,6 @@ export type LastFmAlbum = {
 
 export type LastFmImage = {
     "#text": string
-    size: "small" | "medium" | "large" | "extralarge" | string
+    size: "small" | "medium" | "large" | "extralarge" | "mega" | ""
 }
 

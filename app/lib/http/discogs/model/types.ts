@@ -122,7 +122,7 @@ export type DiscogsIdentifier = {
 }
 
 export type DiscogsImage = {
-    type: "primary" | "secondary" | string
+    type: "primary" | "secondary"
     uri: string
     resource_url: string
     uri150: string

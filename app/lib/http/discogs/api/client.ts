@@ -72,7 +72,6 @@ class Discogs {
             throw new Error("Missing DISCOGS_BASE_URL env var")
         }
 
-        console.log(config);
         return config;
     }
 }
