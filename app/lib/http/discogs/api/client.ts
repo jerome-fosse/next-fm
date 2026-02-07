@@ -1,4 +1,4 @@
-import {DiscogsMaster, DiscogsRelease, DiscogsSearchParams, DiscogsSearchResponse} from "@/app/lib/http/discogs/model/type";
+import {DiscogsMaster, DiscogsRelease, DiscogsSearchParams, DiscogsSearchResponse} from "@/app/lib/http/discogs/model/types";
 import axios, {AxiosInstance, AxiosResponse} from "axios";
 
 export type Config = {
