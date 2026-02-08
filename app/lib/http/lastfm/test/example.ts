@@ -1,7 +1,6 @@
 import {lastfm} from "@/app/lib/http/lastfm/test/";
 
-const config = lastfm.defaultConfig()
-const client = lastfm.createClient(config)
+const client = lastfm.createClientWithDefaultConfig();
 
 client.search({album: "vacuous in his blood", limit: 10, page: 1})
     .then(response => {

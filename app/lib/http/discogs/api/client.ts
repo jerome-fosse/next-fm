@@ -15,7 +15,7 @@ export interface Client {
     releaseById(id: number): Promise<AxiosResponse<DiscogsRelease>>,
 }
 
-class DiscogsClient implements Client {
+export class DiscogsClient implements Client {
     private cfg: Config;
     private apiClient: AxiosInstance;
 
@@ -54,25 +54,39 @@ class Discogs {
     constructor() {
     }
     public createClient(config: Config) : Client {
+        this.checkConfig(config)
+        return new DiscogsClient(config)
+    }
+    public createClientWithDefaultConfig() : Client {
+        const config = this.defaultConfig()
+        this.checkConfig(config)
+
         return new DiscogsClient(config)
     }
     public defaultConfig(): Config {
-        const config = {
+        return {
             token: process.env.DISCOGS_TOKEN ?? "",
             baseUrl: process.env.DISCOGS_BASE_URL ?? "https://api.discogs.com",
             timeout: parseInt(process.env.DISCOGS_TIMEOUT ?? "1000", 10),
             userAgent: process.env.USER_AGENT ?? "Next.js/generic",
         }
-
+    }
+    private checkConfig(config: Config) {
         if (config.token === "") {
-            throw new Error("Missing DISCOGS_TOKEN env var")
+            throw new Error("Missing DISCOGS_TOKEN in config...")
         }
 
         if (config.baseUrl === "") {
-            throw new Error("Missing DISCOGS_BASE_URL env var")
+            throw new Error("Missing DISCOGS_BASE_URL in config...")
         }
 
-        return config;
+        if (config.timeout === null) {
+            throw new Error("Missing DISCOGS_TIMEOUT in config...")
+        }
+
+        if (config.userAgent === "") {
+            throw new Error("Missing USER_AGENT in config...")
+        }
     }
 }
 

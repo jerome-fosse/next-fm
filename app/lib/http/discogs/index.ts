@@ -1,4 +1,4 @@
 import "server-only"
 
-export * from "./api/client";
+export type {Config, Client} from "./api/client";
 export * from "./model/types";

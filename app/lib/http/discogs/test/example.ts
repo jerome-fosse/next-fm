@@ -1,7 +1,6 @@
 import {discogs} from "@/app/lib/http/discogs/test";
 
-const config = discogs.defaultConfig();
-const discogsClient = discogs.createClient(config);
+const discogsClient = discogs.createClientWithDefaultConfig();
 
 
 discogsClient.search({query: "Vacuous in his blood", type: "master", per_page: 10})

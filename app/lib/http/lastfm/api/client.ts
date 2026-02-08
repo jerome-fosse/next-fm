@@ -31,6 +31,8 @@ class LastFMClient implements Client {
             timeout: config.timeout,
             headers: {
                 "User-Agent": config.userAgent,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
             }
         });
     }
@@ -62,6 +64,13 @@ class LastFM {
     constructor() {
     }
     public createClient(config: Config) : Client {
+        this.checkConfig(config)
+        return new LastFMClient(config)
+    }
+    public createClientWithDefaultConfig() : Client {
+        const config = this.defaultConfig()
+        this.checkConfig(config)
+
         return new LastFMClient(config)
     }
     public defaultConfig(): Config {
@@ -77,6 +86,20 @@ class LastFM {
         }
 
         return config;
+    }
+    private checkConfig(config: Config) {
+        if (config.apiKey === "") {
+            throw new Error("Missing LASTFM_API_KEY in config...");
+        }
+        if (config.baseUrl === "") {
+            throw new Error("Missing LASTFM_BASE_URL in config...");
+        }
+        if (config.timeout === null) {
+            throw new Error("Missing LASTFM_TIMEOUT in config...");
+        }
+        if (config.userAgent === "") {
+            throw new Error("Missing USER_AGENT in config...");
+        }
     }
 }
 
