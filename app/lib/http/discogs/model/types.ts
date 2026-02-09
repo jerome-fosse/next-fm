@@ -1,5 +1,5 @@
 
-type Pagination = {
+export type DiscogsPagination = {
     per_page: number,
     pages: number,
     page: number,
@@ -218,26 +218,29 @@ export type DiscogsSearchParams = {
 
 export type DiscogsSearchResultItem = {
     id: number
-    type: string
+    title: string
     country: string
     year: string
-    title: string
+    format: string[]
+    label: string[]
+    type: string
     genre: string[]
     style: string[]
-    label: string[]
-    format: string[]
-    thumb: string
+    barcode: string[],
+    master_id: number,
+    master_url: string,
     uri: string
+    catno: string
+    thumb: string,
+    cover_image: string,
+    resource_url: string
     community: {
         want: number
         have: number
     }
-    catno: string
-    resource_url: string
-    barcode: string[]
 }
 
 export type DiscogsSearchResponse = {
-    pagination: Pagination,
+    pagination: DiscogsPagination,
     results: DiscogsSearchResultItem[]
 }

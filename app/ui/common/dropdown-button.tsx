@@ -6,6 +6,7 @@ import {BiSolidDownArrow} from "react-icons/bi";
 import {useState} from "react";
 
 type Props = {
+    name?: string,
     type?: "submit" | "reset" | "button",
     text?: string
     icon?: IconType
@@ -21,12 +22,13 @@ export type DropDownButtonItem = {
     default?: boolean
 }
 
-export default function DropDownButton({type = "button", text = "Button", icon, items}: Props) {
+export default function DropDownButton({name = "dropdown-button", type = "button", text = "Button", icon, items}: Props) {
     const ButtonIcon = icon;
     const textButton = items.filter(item => item.default == true)
         .map(item => item.textButton)
         .shift() ?? text;
     const [label, setLabel] = useState(textButton)
+    const [value, setValue] = useState(items[0].textMenuItem)
 
     return (
         <div className="join join-horizontal btn btn-secondary rounded-md m-0 p-0 border-none bg-transparent gap-0">
@@ -37,7 +39,9 @@ export default function DropDownButton({type = "button", text = "Button", icon, 
                 <div tabIndex={0} role="button" className="join-item btn btn-secondary border-l-0 ml-0 p-3 shadow-none">
                     <BiSolidDownArrow/>
                 </div>
-                <ul tabIndex={-1} className="dropdown-content menu bg-secondary-content text-base-content rounded-box z-1 w-52 p-2 shadow-sm">
+                <input type="text" name={name} className="hidden" defaultValue={value}/>
+                <ul tabIndex={-1}
+                    className="dropdown-content menu bg-secondary-content text-base-content rounded-box w-52 p-2 z-50 shadow-sm">
                     {items.map((item, index) => {
                         const ItemIcon = item.icon;
 
@@ -45,6 +49,7 @@ export default function DropDownButton({type = "button", text = "Button", icon, 
                             <li key={index}>
                                 <a href={item.href ?? "#"} onClick={() => {
                                     setLabel(item.textButton ?? item.textMenuItem);
+                                    setValue(item.textMenuItem);
                                     // @ts-ignore
                                     document.activeElement!.blur();
                                 }}>

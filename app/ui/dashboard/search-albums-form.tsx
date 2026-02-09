@@ -6,18 +6,24 @@ import {SiDiscogs} from "react-icons/si";
 import {PiPlaylist} from "react-icons/pi";
 import {BiSearchAlt2} from "react-icons/bi";
 
-export default function SearchAlbumsForm() {
+type Props = {
+    defaultQuery?: string,
+    formAction?: (payload: FormData) => void
+}
+
+export default function SearchAlbumsForm({defaultQuery, formAction}: Props) {
     const menuItems = [
         {textMenuItem: 'Discogs', textButton: 'Chercher sur Discogs', icon: SiDiscogs, default: true},
         {textMenuItem: 'Setlist.fm', textButton: 'Chercher sur Setlist.fm', icon: PiPlaylist},
     ]
 
     return (
-        <form>
+        <form action={formAction}>
             <div className="flex space-x-4">
-                <label htmlFor="album" className="label">Album ou artiste</label>
-                <SearchInput name="album" label="Album ou artiste recherché" required/>
-                <DropDownButton type="submit" text="Chercher..." icon={BiSearchAlt2} items={menuItems} />
+                <label htmlFor="query" className="label">Album ou artiste</label>
+                <SearchInput name="query" defaultValue={defaultQuery} required/>
+                <DropDownButton name="searchapi" type="submit" text="Chercher..." icon={BiSearchAlt2}
+                                items={menuItems}/>
             </div>
         </form>
     )

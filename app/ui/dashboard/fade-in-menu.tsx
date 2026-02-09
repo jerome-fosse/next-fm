@@ -3,7 +3,10 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {GrStatusUnknown} from "react-icons/gr";
 
-type Props = { isVisible: boolean };
+type Props = {
+    className?: string,
+    isVisible: boolean
+};
 
 const menuItems = [
     {
@@ -31,16 +34,16 @@ const menuItems = [
     },
 ]
 
-export default function FadeInMenu({isVisible}: Props) {
+export default function FadeInMenu({className, isVisible}: Props) {
     const pathname = usePathname();
 
     return (
         <div className={[
-            "h-full w-full bg-secondary-content rounded-md overflow-y-auto",
             `transition-all duration-300 ease-out`,
             isVisible
                 ? "opacity-100 translate-x-0"
                 : "opacity-0 -translate-x-2 pointer-events-none",
+            ...(className ? [className] : []),
         ].join(" ")}
              aria-hidden={!isVisible}
         >

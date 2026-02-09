@@ -8,20 +8,14 @@ export default function Layout({children}: Readonly<{ children: React.ReactNode;
     const [menuIsVisible, setMenuVisibility] = useState(false);
 
     return (
-        <div className="flex flex-col max-w-[1408px] mx-auto h-screen overflow-hidden font-sans space-x-2">
-            <div id="navbar" className="w-full px-2 pt-2">
+        <div className="flex flex-col max-w-[1408px] h-screen mx-auto font-sans">
+            <div id="navbar" className="w-full px-2 pt-2 flex-shrink-0">
                 <NavigationBar onMenuToggle={() => setMenuVisibility(!menuIsVisible)}/>
             </div>
-            <div id="content-parent" className="flex h-full m-2 space-x-2">
-                <div id="menu" className={[
-                    "h-full mb-2 rounded-md",
-                    "transition-[width] duration-300 ease-out",
-                    menuIsVisible ? "w-72" : "w-0",
-                ].join(" ")}
-                >
-                    <FadeInMenu isVisible={menuIsVisible}/>
-                </div>
-                <div id="content" className="h-full w-full p-2 overflow-y-auto">
+            <div id="content-parent" className="flex flex-1 min-h-0 m-2 space-x-2">
+                <FadeInMenu className={`h-full bg-secondary-content rounded-md ${menuIsVisible ? "w-60" : "w-0"}`}
+                            isVisible={menuIsVisible}/>
+                <div id="content" className="flex w-full h-full overflow-hidden">
                     { children }
                 </div>
             </div>
