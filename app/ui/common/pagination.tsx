@@ -1,6 +1,6 @@
 'use client'
 
-import {useState} from "react";
+import {memo, useState} from "react";
 import {logger} from "@/app/lib/logger";
 
 type Props = {
@@ -17,7 +17,8 @@ type Props = {
     onChangePage: (page: number) => void
 }
 
-export default function PaginationControl({
+//export default function PaginationControl({
+const PaginationControl= memo(function PaginationControl({
                                        pages,
                                        page,
                                        showFirst = true,
@@ -43,7 +44,7 @@ export default function PaginationControl({
     const endPagesRange = Math.min(pages, startPagesRange + 6);
     const pagesRange = [...Array(endPagesRange - startPagesRange + 1).keys()].map((_, i) => i + startPagesRange);
 
-    console.log("PaginationControl:", "startPagesRange=", startPagesRange, "endPagesRange=", endPagesRange, "pagesRange=", pagesRange);
+    logger.debug("PaginationControl:", "startPagesRange=", startPagesRange, "endPagesRange=", endPagesRange, "pagesRange=", pagesRange);
 
     return (
         <div className="join">
@@ -56,4 +57,6 @@ export default function PaginationControl({
             {showLast && <button className={`join-item btn`} name="last" onClick={() => changePage(pages)}>{lastLabel}</button>}
         </div>
     )
-}
+});
+
+export default PaginationControl;

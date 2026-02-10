@@ -3,6 +3,7 @@ import {Pagination} from "@/app/types/common";
 import {AlbumShort} from "@/app/types/albums";
 import PaginationControl from "@/app/ui/common/pagination";
 import {logger} from "@/app/lib/logger";
+import {memo} from "react";
 
 export type Props = {
     className?: string,
@@ -11,7 +12,7 @@ export type Props = {
     onChangePage: (page: number) => void
 }
 
-export default function SearchAlbumsResult({onChangePage, className, albums, pagination}: Props) {
+const SearchAlbumsResult = memo(function SearchAlbumsResult({onChangePage, className, albums, pagination}: Props) {
     logger.debug("SearchAlbumsResult Params:", "className=", className, "albums=", albums, "pagination=", pagination);
 
     if (!albums || albums.length === 0) {
@@ -39,4 +40,6 @@ export default function SearchAlbumsResult({onChangePage, className, albums, pag
             </div>}
         </div>
     )
-}
+});
+
+export default SearchAlbumsResult;

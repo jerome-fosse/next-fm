@@ -2,7 +2,7 @@
 
 import {PiVinylRecord} from "react-icons/pi";
 import SearchAlbumsForm from "@/app/ui/dashboard/search-albums-form";
-import {useActionState, useTransition} from "react";
+import {useActionState, useCallback, useTransition} from "react";
 import {searchAlbumsAction, SearchAlbumsState} from "@/app/lib/actions/album";
 import SearchAlbumsResult from "@/app/ui/dashboard/search-albums-result";
 
@@ -17,7 +17,7 @@ export default function Page() {
     const [state, formAction] = useActionState(searchAlbumsAction, initialState)
     const [isPending, startTransition] = useTransition();
 
-    function changePage(page: number) {
+    const changePage = useCallback((page: number) => {
         startTransition(() => {
             const formData = new FormData();
             formData.append('query', state.query);
@@ -26,7 +26,7 @@ export default function Page() {
 
             formAction(formData);
         });
-    }
+    }, [state.query, state.searchApi])
 
     return (
         <div className="flex flex-col w-full h-full">

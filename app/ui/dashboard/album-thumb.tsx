@@ -16,7 +16,7 @@ export default function AlbumThumbnail({album}: Props) {
     return (
         <>
             <div className="w-40 aspect-square relative">
-                <Image src={thumburl} alt={album.title} fill={true}/>
+                <Image src={thumburl} alt={album.title} fill={true} sizes="160px"/>
             </div>
             <div className="mt-1 w-40 h-12">
                 <div className="max-h-8 overflow-hidden">
