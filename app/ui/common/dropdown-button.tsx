@@ -31,7 +31,7 @@ export default function DropDownButton({name = "dropdown-button", type = "button
     const [value, setValue] = useState(items[0].textMenuItem)
 
     return (
-        <div className="join join-horizontal btn btn-secondary rounded-md m-0 p-0 border-none bg-transparent gap-0">
+        <div className="join join-horizontal btn btn-secondary rounded-md m-0 p-0 border-none bg-transparent gap-0 z-50">
             <button type={type} className="btn btn-secondary join-item border-r-0 mr-0 pr-0 shadow-none">
                 {ButtonIcon != null ? <ButtonIcon className="w-5 h-5"/> : null}{label}
             </button>
@@ -41,7 +41,7 @@ export default function DropDownButton({name = "dropdown-button", type = "button
                 </div>
                 <input type="text" name={name} className="hidden" defaultValue={value}/>
                 <ul tabIndex={-1}
-                    className="dropdown-content menu bg-secondary-content text-base-content rounded-box w-52 p-2 z-50 shadow-sm">
+                    className="dropdown-content menu bg-secondary-content text-base-content rounded-box w-52 p-2 shadow-sm">
                     {items.map((item, index) => {
                         const ItemIcon = item.icon;
 
