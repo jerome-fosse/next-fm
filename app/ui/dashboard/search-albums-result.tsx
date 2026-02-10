@@ -14,12 +14,14 @@ export default function SearchAlbumsResult({className, albums, pagination}: Prop
 
     return (
         <div className={`flex flex-col ${className || ''}`}>
-            <div className="flex w-full navbar bg-secondary-content border border-gray-300 rounded-t-md">
-                {pagination && <p>Page {pagination.page} sur {pagination.total}</p>}
+            <div className="flex items-center w-full h-12 px-4 text-sm bg-secondary-content border border-gray-300 rounded-t-md">
+                <span>{pagination?.total ?? albums.length} résultat(s)</span>
+                <span className="grow"></span>
+                {pagination && <span>Page {pagination.page} sur {pagination.pages}</span>}
             </div>
-            <div className="flex flex-wrap w-full min-h-0 border border-gray-300 rounded-b-md shadow-md overflow-y-auto">
+            <div className="flex flex-wrap w-full h-full border px-2 border-gray-300 rounded-b-md overflow-y-auto">
                 {albums.map(album =>
-                    <div key={album.id} className="m-2 p-2 border border-gray-300 rounded-md shadow-md cursor-pointer hover:shadow-lg hover:shadow-blue-500/50">
+                    <div key={album.id} className="mx-1 my-2 p-2 h-fit border border-gray-300 rounded-md shadow-md cursor-pointer hover:shadow-lg hover:shadow-blue-500/50">
                         <AlbumThumbnail album={album} />
                     </div>
                 )}
