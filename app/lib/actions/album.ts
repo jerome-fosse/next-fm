@@ -6,7 +6,7 @@ import {Pagination} from "@/app/types/common";
 
 export type SearchAlbumsState = {
     query: string,
-    isLoading: boolean,
+    searchApi: string,
     error?: Error,
     albums?: AlbumShort[],
     pagination?: Pagination,
@@ -14,12 +14,13 @@ export type SearchAlbumsState = {
 
 export async function searchAlbumsAction(prevState: SearchAlbumsState, formData: FormData) {
     const query = formData.get("query") as string;
+    const searchApi = formData.get("searchapi") as string;
+    const page = parseInt(formData.get("page") as string, 10);
 
-    console.log(query);
     if (!query)
         throw new Error("Requête invalide : champ 'query' manquant");
 
-    const data = await searchAlbums(query);
+    const data = await searchAlbums(query, page);
 
-    return {query: query, isLoading: false, error: undefined, albums: data.albums, pagination: data.pagination};
+    return {query: query, searchApi: searchApi, error: undefined, albums: data.albums, pagination: data.pagination};
 }

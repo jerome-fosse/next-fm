@@ -7,8 +7,8 @@ type Props = {
 
 export default function AlbumThumbnail({album}: Props) {
 
-    const thumburl = album.images
-            ?.find((img) => img.size === 'small')?.uri
+    const thumburl = (album.images
+            ?.find((img) => img.size === 'small')?.uri || undefined)
         ?? '/images/image-not-found.png';
 
     const [artist, title] = album.title.split(' - ');
