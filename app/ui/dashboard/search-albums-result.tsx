@@ -19,7 +19,7 @@ export default function SearchAlbumsResult({className, albums, pagination}: Prop
             </div>
             <div className="flex flex-wrap w-full min-h-0 border border-gray-300 rounded-b-md shadow-md overflow-y-auto">
                 {albums.map(album =>
-                    <div key={album.id} className="m-2 p-2 border border-gray-300 rounded-md shadow-md">
+                    <div key={album.id} className="m-2 p-2 border border-gray-300 rounded-md shadow-md cursor-pointer hover:shadow-lg hover:shadow-blue-500/50">
                         <AlbumThumbnail album={album} />
                     </div>
                 )}
