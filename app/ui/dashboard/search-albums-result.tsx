@@ -2,6 +2,7 @@ import AlbumThumbnail from "@/app/ui/dashboard/album-thumb";
 import {Pagination} from "@/app/types/common";
 import {AlbumShort} from "@/app/types/albums";
 import PaginationControl from "@/app/ui/common/pagination";
+import {logger} from "@/app/lib/logger";
 
 export type Props = {
     className?: string,
@@ -11,8 +12,12 @@ export type Props = {
 }
 
 export default function SearchAlbumsResult({onChangePage, className, albums, pagination}: Props) {
-    if (!albums || albums.length === 0)
+    logger.debug("SearchAlbumsResult Params:", "className=", className, "albums=", albums, "pagination=", pagination);
+
+    if (!albums || albums.length === 0) {
+        logger.debug("SearchAlbumsResult: No albums to display...");
         return null;
+    }
 
     return (
         <div className={`flex flex-col ${className || ''}`}>

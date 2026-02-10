@@ -1,6 +1,7 @@
 'use client'
 
 import {useState} from "react";
+import {logger} from "@/app/lib/logger";
 
 type Props = {
     pages: number,
@@ -30,16 +31,19 @@ export default function PaginationControl({
                                        onChangePage
                                    }: Props) {
 
+    logger.debug("PaginationControl Params:", "pages=", pages, "page=", page, "showFirst=", showFirst, "showLast=", showLast, "showPrev=", showPrev, "showNext=", showNext, "firstLabel=", firstLabel, "lastLabel=", lastLabel, "prevLabel=", prevLabel, "nextLabel=", nextLabel);
+
     function changePage(page: number) {
         onChangePage(page);
         setActivePage(page);
     }
 
+    const [activePage, setActivePage] = useState(page);
     const startPagesRange = Math.max(1, Math.min(page - 3, pages - 6));
     const endPagesRange = Math.min(pages, startPagesRange + 6);
     const pagesRange = [...Array(endPagesRange - startPagesRange + 1).keys()].map((_, i) => i + startPagesRange);
 
-    const [activePage, setActivePage] = useState(page);
+    console.log("PaginationControl:", "startPagesRange=", startPagesRange, "endPagesRange=", endPagesRange, "pagesRange=", pagesRange);
 
     return (
         <div className="join">
