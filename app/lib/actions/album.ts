@@ -37,7 +37,5 @@ export async function searchAlbumsAction(prevState: SearchAlbumsState, formData:
             throw new Error("API de recherche non supportée");
     }
 
-    logger.debug("searchAlbumsAction Result:", data);
-
     return {query: query, searchApi: searchApi, error: undefined, albums: data.albums, pagination: data.pagination};
 }

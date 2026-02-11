@@ -10,6 +10,7 @@ export type AlbumShort = {
     title: string,
     year?: string,
     artist: Artist,
+    origin: "Discogs" | "Last.fm"
     url?: string,
     images?: Image[],
 }

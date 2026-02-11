@@ -10,6 +10,7 @@ export function discogsSearchResultItemToAlbumShort(item: DiscogsSearchResultIte
         title: albumTitle,
         year: item.year,
         artist: {id: '', name: artistName},
+        origin: "Discogs",
         url: `https://www.discogs.com${item.uri}`,
         images: [
             {size: "small", uri: item.thumb},
@@ -23,6 +24,7 @@ export function lastfmSearchResultItemToAlbumShort(item: LastFmAlbum): AlbumShor
         id: item.mbid,
         title: item.name,
         artist: {id: '', name: item.artist},
+        origin: "Last.fm",
         url: item.url,
         images: item.image.map((image) =>
             ({

@@ -32,7 +32,7 @@ export default function Page() {
         <div className="flex flex-col w-full h-full">
             <div className="flex text-4xl mb-8"><PiVinylRecord className="mr-4"/>Scrobbler des albums...</div>
             <SearchAlbumsForm defaultQuery={state.query} formAction={formAction}/>
-            <SearchAlbumsResult className="flex-1 min-h-0 mt-4" albums={state.albums} pagination={state.pagination} onChangePage={changePage}/>
+            <SearchAlbumsResult className="flex-1 min-h-0 mt-4" albums={state.albums} pagination={state.pagination} pending={isPending} onChangePage={changePage}/>
         </div>
     )
 }
