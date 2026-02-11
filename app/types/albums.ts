@@ -9,6 +9,8 @@ export type AlbumShort = {
     id: string,
     title: string,
     year?: string,
+    artist: Artist,
+    url?: string,
     images?: Image[],
 }
 
@@ -26,6 +28,6 @@ export type Artist = {
 }
 
 export type Image = {
-    size: "small" | "medium" | "large" | "extralarge"
+    size: "small" | "medium" | "large" | "extralarge" | "mega" | ""
     uri: string,
 }

@@ -15,7 +15,7 @@ export type Props = {
 const SearchAlbumsResult = memo(function SearchAlbumsResult({onChangePage, className, albums, pagination}: Props) {
     logger.debug("SearchAlbumsResult Params:", "className=", className, "albums=", albums, "pagination=", pagination);
 
-    if (!albums || albums.length === 0) {
+    if (!albums) {
         logger.debug("SearchAlbumsResult: No albums to display...");
         return null;
     }
@@ -28,8 +28,8 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({onChangePage, class
                 {pagination && <span>Page {pagination.page} sur {pagination.pages}</span>}
             </div>
             <div className={`flex flex-wrap w-full h-full border px-2 border-gray-300 ${pagination && pagination.pages > 1 ? '' : 'rounded-b-md'} overflow-y-auto`}>
-                {albums.map(album =>
-                    <div key={album.id}
+                {albums.map((album, index) =>
+                    <div key={index}
                          className="mx-1 my-2 p-2 h-fit border border-gray-300 rounded-md shadow-md cursor-pointer hover:shadow-lg hover:shadow-blue-500/50">
                         <AlbumThumbnail album={album} />
                     </div>

@@ -14,7 +14,7 @@ type Props = {
 export default function SearchAlbumsForm({defaultQuery, formAction}: Props) {
     const menuItems = [
         {textMenuItem: 'Discogs', textButton: 'Chercher sur Discogs', icon: SiDiscogs, default: true},
-        {textMenuItem: 'Setlist.fm', textButton: 'Chercher sur Setlist.fm', icon: PiPlaylist},
+        {textMenuItem: 'Last.fm', textButton: 'Chercher sur Last.fm', icon: PiPlaylist},
     ]
 
     return (
