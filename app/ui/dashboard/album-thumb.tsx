@@ -28,9 +28,10 @@ export default function AlbumThumbnail({album, handleImageLoad}: Props) {
                 <Image src={thumburl} alt={`${album.artist.name} - ${album.title}`}
                        fill={true} sizes="160px" onLoad={handleImageLoad} unoptimized={true} />
                 {album.origin && album.url &&
-                    <button className="absolute btn btn-circle btn-neutral bottom-0 right-0 opacity-50 group-hover:opacity-100">
-                        <a className="link" href={album.url} target="_blank">{originButton(album)}</a>
-                    </button>
+                    <a className="absolute btn btn-circle btn-neutral bottom-0 right-0 opacity-50 group-hover:opacity-100"
+                       href={album.url} target="_blank" rel="noopener noreferrer">
+                        {originButton(album)}
+                    </a>
                 }
             </div>
             <div className="mt-1 w-40 h-12">

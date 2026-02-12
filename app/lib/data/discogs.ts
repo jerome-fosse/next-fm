@@ -5,9 +5,10 @@ import {SearchAlbumsResult} from "@/app/types/albums";
 import {discogsSearchResultItemToAlbumShort} from "@/app/lib/mapper/album";
 import {discogsPaginationToPagination} from "@/app/lib/mapper/common";
 import {logger} from "@/app/lib/logger";
+import config from "@/app/config";
 
 const api = discogs.createClientWithDefaultConfig();
-const searchAlbumsPageSize = parseInt(process.env.SEARCH_ALBUMS_PAGE_SIZE ?? "", 10) || 10;
+const searchAlbumsPageSize = config.discogs.searchPageSize;
 
 export async function searchAlbumsDiscogs(query: string, page: number = 1): Promise<SearchAlbumsResult> {
     logger.debug("Discogs: Searching albums for =>", "query=", query, "page=", page);

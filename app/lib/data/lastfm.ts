@@ -2,9 +2,10 @@ import {lastfm} from "@/app/lib/http/lastfm";
 import {SearchAlbumsResult} from "@/app/types/albums";
 import {lastfmSearchResultItemToAlbumShort} from "@/app/lib/mapper/album";
 import {logger} from "@/app/lib/logger";
+import config from "@/app/config";
 
 const api = lastfm.createClientWithDefaultConfig();
-const searchAlbumsPageSize = parseInt(process.env.SEARCH_ALBUMS_PAGE_SIZE ?? "20", 10);
+const searchAlbumsPageSize = config.lastfm.searchPageSize;
 
 export async function searchAlbumsLastfm(query: string, page: number = 1): Promise<SearchAlbumsResult> {
     logger.debug("Last.fm: Searching albums for =>", "query=", query, "page=", page);

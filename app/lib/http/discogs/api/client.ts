@@ -1,7 +1,8 @@
 import {DiscogsMaster, DiscogsRelease, DiscogsSearchParams, DiscogsSearchResponse} from "@/app/lib/http/discogs/model/types";
 import axios, {AxiosInstance, AxiosResponse} from "axios";
+import config from "@/app/config";
 
-export type Config = {
+export type DiscogsConfiguration = {
     token: string,
     baseUrl?: string,
     timeout?: number,
@@ -16,10 +17,10 @@ export interface Client {
 }
 
 export class DiscogsClient implements Client {
-    private cfg: Config;
+    private cfg: DiscogsConfiguration;
     private apiClient: AxiosInstance;
 
-    constructor(config: Config) {
+    constructor(config: DiscogsConfiguration) {
         this.cfg = config;
         this.apiClient = axios.create({
             baseURL: config.baseUrl,
@@ -53,7 +54,7 @@ export class DiscogsClient implements Client {
 class Discogs {
     constructor() {
     }
-    public createClient(config: Config) : Client {
+    public createClient(config: DiscogsConfiguration) : Client {
         this.checkConfig(config)
         return new DiscogsClient(config)
     }
@@ -63,29 +64,30 @@ class Discogs {
 
         return new DiscogsClient(config)
     }
-    public defaultConfig(): Config {
+    public defaultConfig(): DiscogsConfiguration {
         return {
-            token: process.env.DISCOGS_TOKEN ?? "",
-            baseUrl: process.env.DISCOGS_BASE_URL ?? "https://api.discogs.com",
-            timeout: parseInt(process.env.DISCOGS_TIMEOUT ?? "1000", 10),
-            userAgent: process.env.USER_AGENT ?? "Next.js/generic",
+            token: config.discogs.token,
+            baseUrl: config.discogs.baseUrl,
+            timeout: config.discogs.timeout,
+            userAgent: config.userAgent
         }
     }
-    private checkConfig(config: Config) {
+
+    private checkConfig(config: DiscogsConfiguration) {
         if (config.token === "") {
-            throw new Error("Missing DISCOGS_TOKEN in config...")
+            throw new Error("Missing DISCOGS_TOKEN in index...")
         }
 
         if (config.baseUrl === "") {
-            throw new Error("Missing DISCOGS_BASE_URL in config...")
+            throw new Error("Missing DISCOGS_BASE_URL in index...")
         }
 
         if (config.timeout === null) {
-            throw new Error("Missing DISCOGS_TIMEOUT in config...")
+            throw new Error("Missing DISCOGS_TIMEOUT in index...")
         }
 
         if (config.userAgent === "") {
-            throw new Error("Missing USER_AGENT in config...")
+            throw new Error("Missing USER_AGENT in index...")
         }
     }
 }

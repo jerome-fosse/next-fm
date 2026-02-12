@@ -6,13 +6,13 @@ import {
     LastFmGetAlbumInfoResponse,
     SearchParams
 } from "@/app/lib/http/lastfm/model/types";
+import config from "@/app/config";
 
-export type Config = {
+export type LastfmConfiguration = {
     apiKey: string,
     baseUrl?: string,
     timeout?: number,
     userAgent?: string,
-
 }
 
 export interface Client {
@@ -21,10 +21,10 @@ export interface Client {
 }
 
 class LastFMClient implements Client {
-    private cfg: Config;
+    private cfg: LastfmConfiguration;
     private api: AxiosInstance;
 
-    constructor(config: Config) {
+    constructor(config: LastfmConfiguration) {
         this.cfg = config;
         this.api = axios.create({
             baseURL: config.baseUrl,
@@ -63,7 +63,7 @@ class LastFMClient implements Client {
 class LastFM {
     constructor() {
     }
-    public createClient(config: Config) : Client {
+    public createClient(config: LastfmConfiguration) : Client {
         this.checkConfig(config)
         return new LastFMClient(config)
     }
@@ -73,32 +73,27 @@ class LastFM {
 
         return new LastFMClient(config)
     }
-    public defaultConfig(): Config {
-        const config = {
-            apiKey: process.env.LASTFM_API_KEY ?? "",
-            baseUrl: process.env.LASTFM_BASE_URL ?? "https://ws.audioscrobbler.com",
-            timeout: parseInt(process.env.LASTFM_TIMEOUT ?? "1000", 10),
-            userAgent: process.env.USER_AGENT ?? "Next.js/generic",
+    public defaultConfig(): LastfmConfiguration {
+        return {
+            apiKey: config.lastfm.apiKey,
+            baseUrl: config.lastfm.baseUrl,
+            timeout: config.lastfm.timeout,
+            userAgent: config.userAgent
         }
-
-        if (config.apiKey === "") {
-            throw new Error("Missing LASTFM_API_KEY env var");
-        }
-
-        return config;
     }
-    private checkConfig(config: Config) {
+
+    private checkConfig(config: LastfmConfiguration) {
         if (config.apiKey === "") {
-            throw new Error("Missing LASTFM_API_KEY in config...");
+            throw new Error("Missing LASTFM_API_KEY in index...");
         }
         if (config.baseUrl === "") {
-            throw new Error("Missing LASTFM_BASE_URL in config...");
+            throw new Error("Missing LASTFM_BASE_URL in index...");
         }
         if (config.timeout === null) {
-            throw new Error("Missing LASTFM_TIMEOUT in config...");
+            throw new Error("Missing LASTFM_TIMEOUT in index...");
         }
         if (config.userAgent === "") {
-            throw new Error("Missing USER_AGENT in config...");
+            throw new Error("Missing USER_AGENT in index...");
         }
     }
 }
