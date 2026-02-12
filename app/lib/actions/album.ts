@@ -5,6 +5,7 @@ import {AlbumShort, SearchAlbumsResult} from "@/app/types/albums";
 import {Pagination} from "@/app/types/common";
 import {searchAlbumsLastfm} from "@/app/lib/data/lastfm";
 import {logger} from "@/app/lib/logger";
+import {z} from "zod";
 
 export type SearchAlbumsState = {
     query: string,
@@ -15,27 +16,34 @@ export type SearchAlbumsState = {
 }
 
 export async function searchAlbumsAction(prevState: SearchAlbumsState, formData: FormData) {
-    logger.debug("searchAlbumsAction Params:", "formData=", formData);
+    const SearchParams = z.object({
+        query: z.string().min(1, "Une requête de recherche est obligatoire."),
+        searchapi: z.literal(["Discogs", "Last.fm"], "Seules les API Discogs et Last.fm sont supportées."),
+        page: z.coerce.number().int().min(1).optional().default(1),
+    })
 
-    const query = formData.get("query") as string;
-    const searchApi = formData.get("searchapi") as string;
-    const page = parseInt(formData.get("page") as string ?? "1", 10);
+    const formEntries = Object.fromEntries(formData.entries());
+    const parsed = SearchParams.safeParse(formEntries);
 
-    if (!query)
-        throw new Error("Requête invalide : champ 'query' manquant");
+    if (!parsed.success) {
+        logger.error("Paramètres de recherche invalides:", parsed.error.message);
+        return {query: formEntries.query, searchApi: formEntries.searchapi, error: `Paramètres de recherche invalides.`, albums: undefined, pagination: undefined};
+    }
+
+    logger.debug("searchAlbumsAction Params:", "SearchParams=", parsed.data);
 
     let data: SearchAlbumsResult;
 
-    switch (searchApi) {
+    switch (parsed.data.searchapi) {
         case "Discogs":
-            data = await searchAlbumsDiscogs(query, page);
+            data = await searchAlbumsDiscogs(parsed.data.query, parsed.data.page);
             break;
         case "Last.fm":
-            data = await searchAlbumsLastfm(query, page);
+            data = await searchAlbumsLastfm(parsed.data.query, parsed.data.page);
             break;
         default:
             throw new Error("API de recherche non supportée");
     }
 
-    return {query: query, searchApi: searchApi, error: undefined, albums: data.albums, pagination: data.pagination};
+    return {query: parsed.data.query, searchApi: parsed.data.searchapi, error: undefined, albums: data.albums, pagination: data.pagination};
 }
