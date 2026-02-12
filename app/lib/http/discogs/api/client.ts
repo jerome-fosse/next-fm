@@ -1,6 +1,7 @@
 import {DiscogsMaster, DiscogsRelease, DiscogsSearchParams, DiscogsSearchResponse} from "@/app/lib/http/discogs/model/types";
 import axios, {AxiosInstance, AxiosResponse} from "axios";
 import config from "@/app/config";
+import {logger} from "@/app/lib/logger";
 
 export type DiscogsConfiguration = {
     token: string,
@@ -12,7 +13,7 @@ export type DiscogsConfiguration = {
 
 export interface Client {
     search(params: DiscogsSearchParams): Promise<AxiosResponse<DiscogsSearchResponse>>,
-    masterById(id: number): Promise<AxiosResponse<DiscogsMaster>>,
+    masterReleaseById(id: number): Promise<AxiosResponse<DiscogsMaster>>,
     releaseById(id: number): Promise<AxiosResponse<DiscogsRelease>>,
 }
 
@@ -42,7 +43,8 @@ export class DiscogsClient implements Client {
             );
     }
 
-    public async masterById(id: number): Promise<AxiosResponse<DiscogsMaster>> {
+    public async masterReleaseById(id: number): Promise<AxiosResponse<DiscogsMaster>> {
+        logger.debug("Discogs: Fetching master by id: ", "id=", id);
         return this.apiClient.get<DiscogsMaster>(`/masters/${id}`);
     }
 

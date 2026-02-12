@@ -1,5 +1,5 @@
-import {DiscogsSearchResultItem} from "@/app/lib/http/discogs";
-import {AlbumShort} from "@/app/types/albums";
+import {DiscogsMaster, DiscogsSearchResultItem} from "@/app/lib/http/discogs";
+import {Album, AlbumShort} from "@/app/types/albums";
 import {LastFmAlbum} from "@/app/lib/http/lastfm";
 
 export function discogsSearchResultItemToAlbumShort(item: DiscogsSearchResultItem): AlbumShort {
@@ -9,7 +9,7 @@ export function discogsSearchResultItemToAlbumShort(item: DiscogsSearchResultIte
         id: item.id.toString(10),
         title: albumTitle,
         year: item.year,
-        artist: {id: '', name: artistName},
+        artist: {id: '', name: artistName, roles: ''},
         origin: "Discogs",
         url: `https://www.discogs.com${item.uri}`,
         images: [
@@ -23,7 +23,7 @@ export function lastfmSearchResultItemToAlbumShort(item: LastFmAlbum): AlbumShor
     return {
         id: item.mbid,
         title: item.name,
-        artist: {id: '', name: item.artist},
+        artist: {id: '', name: item.artist, roles: ''},
         origin: "Last.fm",
         url: item.url,
         images: item.image.map((image) =>
@@ -32,5 +32,31 @@ export function lastfmSearchResultItemToAlbumShort(item: LastFmAlbum): AlbumShor
                 uri: image['#text']
             })
         )
+    }
+}
+
+export function discogsMasterToAlbum(item: DiscogsMaster): Album {
+    return {
+        id: item.id.toString(10),
+        title: item.title,
+        genres: item.genres,
+        styles: item.styles,
+        year: item.year,
+        artists: item.artists.map(artist => ({
+            id: artist.id.toString(10), name: artist.name, roles: artist.role ?? ""
+        })),
+        tracks: item.tracklist.map(track => ({
+            position: track.position, title: track.title, duration: track.duration,
+            artists: track.extraartists?.map(artist => ({
+                id: artist.id.toString(10), name: artist.name, roles: artist.role ?? ""
+            })) ?? '',
+        })),
+        images: item.images.map(image => ({
+            type: image.type,
+            height: image.height,
+            width: image.width,
+            uri: image.uri
+        })),
+
     }
 }

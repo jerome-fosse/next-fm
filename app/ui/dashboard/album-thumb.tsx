@@ -1,15 +1,16 @@
 import {AlbumShort} from "@/app/types/albums";
 import Image from "next/image";
-import { SiDiscogs } from "react-icons/si";
-import { ImLastfm2 } from "react-icons/im";
-
+import {SiDiscogs} from "react-icons/si";
+import {ImLastfm2} from "react-icons/im";
 
 type Props = {
     album: AlbumShort,
     handleImageLoad: () => void,
+    showOriginButton?: boolean,
+    showDetailAction?: () => void,
 }
 
-export default function AlbumThumbnail({album, handleImageLoad}: Props) {
+export default function AlbumThumbnail({album, showOriginButton = true, showDetailAction, handleImageLoad}: Props) {
 
     const thumburl = (album.images
             ?.find((img) => img.size === 'large')?.uri || undefined)
@@ -21,13 +22,13 @@ export default function AlbumThumbnail({album, handleImageLoad}: Props) {
             case "Last.fm": return <ImLastfm2 className="w-4 h-4"/>
         }
     }
-
+    
     return (
         <>
-            <div className="relative w-40 aspect-square overflow-hidden group">
+            <div className="relative w-40 aspect-square overflow-hidden group" onClick={showDetailAction ? showDetailAction : undefined}>
                 <Image src={thumburl} alt={`${album.artist.name} - ${album.title}`}
                        fill={true} sizes="160px" onLoad={handleImageLoad} unoptimized={true} />
-                {album.origin && album.url &&
+                {showOriginButton && album.origin && album.url &&
                     <a className="absolute btn btn-circle btn-neutral bottom-0 right-0 opacity-50 group-hover:opacity-100"
                        href={album.url} target="_blank" rel="noopener noreferrer">
                         {originButton(album)}
