@@ -45,16 +45,4 @@ const config = {
     }
 }
 
-logger.info("Configuration: ", {
-    ...config,
-    discogs: {
-        ...config.discogs,
-        token: '*******',
-    },
-    lastfm: {
-        ...config.lastfm,
-        apiKey: '*******',
-    }
-})
-
 export default config;
