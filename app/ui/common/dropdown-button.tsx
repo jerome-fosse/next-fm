@@ -4,6 +4,7 @@
 import {IconType} from "react-icons";
 import {BiSolidDownArrow} from "react-icons/bi";
 import {useState} from "react";
+import {logger} from "@/app/lib/logger";
 
 type Props = {
     name?: string,
@@ -39,7 +40,7 @@ export default function DropDownButton({name = "dropdown-button", type = "button
                 <div tabIndex={0} role="button" className="join-item btn btn-secondary border-l-0 ml-0 p-3 shadow-none">
                     <BiSolidDownArrow/>
                 </div>
-                <input type="text" name={name} className="hidden" defaultValue={value}/>
+                <input type="text" name={name} className="hidden" value={value} readOnly/>
                 <ul tabIndex={-1}
                     className="dropdown-content menu bg-secondary-content text-base-content rounded-box w-52 p-2 shadow-sm">
                     {items.map((item, index) => {
