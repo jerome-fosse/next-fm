@@ -1,7 +1,7 @@
 
 import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {
-    GetAlbumInfoParams,
+    AlbumInfoParams,
     LastFmAlbumSearchResponse,
     LastFmGetAlbumInfoResponse,
     SearchParams
@@ -17,7 +17,7 @@ export type LastfmConfiguration = {
 
 export interface Client {
     search(params: SearchParams): Promise<AxiosResponse<LastFmAlbumSearchResponse>>,
-    getAlbumInfo(params: GetAlbumInfoParams): Promise<AxiosResponse<LastFmGetAlbumInfoResponse>>
+    getAlbumInfo(params: AlbumInfoParams): Promise<AxiosResponse<LastFmGetAlbumInfoResponse>>
 }
 
 class LastFMClient implements Client {
@@ -48,7 +48,7 @@ class LastFMClient implements Client {
         });
     }
 
-    public getAlbumInfo(params: GetAlbumInfoParams): Promise<AxiosResponse<LastFmGetAlbumInfoResponse>> {
+    public getAlbumInfo(params: AlbumInfoParams): Promise<AxiosResponse<LastFmGetAlbumInfoResponse>> {
         return this.api.get<LastFmGetAlbumInfoResponse>("/2.0/", {
             params: {
                 method: "album.getInfo",

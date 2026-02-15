@@ -10,7 +10,7 @@ import config from "@/app/config";
 const api = discogs.createClientWithDefaultConfig();
 const searchAlbumsPageSize = config.discogs.searchPageSize;
 
-export async function searchAlbumsDiscogs(query: string, page: number = 1): Promise<SearchAlbumsResult> {
+export async function searchDiscogsAlbums(query: string, page: number = 1): Promise<SearchAlbumsResult> {
     logger.info("Discogs: Searching albums for =>", "query=", query, "page=", page);
 
     return api.search({query: query, type: "master", per_page: searchAlbumsPageSize, page: page})
@@ -30,7 +30,7 @@ export async function searchAlbumsDiscogs(query: string, page: number = 1): Prom
         });
 }
 
-export async function getDiscogsMasterReleaseById(id: number): Promise<Album> {
+export async function fetchDiscogsMasterReleaseById(id: number): Promise<Album> {
     logger.info("Discogs: Fetching master by id: ", "id=", id);
 
     return api.masterReleaseById(id)

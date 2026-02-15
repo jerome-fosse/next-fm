@@ -15,3 +15,12 @@ export function discogsPaginationToPagination(pagination: DiscogsPagination): Pa
         }
     }
 }
+
+export function secondsToDuration(seconds: number): string {
+    return new Date(seconds * 1000).toISOString()
+        .slice(11, 19)
+        .split(':')
+        .filter((s, i) => !(s === '00' && i === 0))
+        .join(':')
+        ;
+}

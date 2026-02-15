@@ -1,0 +1,8 @@
+# Claude Rules
+
+Please follow the guidelines and rules defined in the `.junie/` directory:
+- `.junie/instructions.md` (Process and consent)
+- `.junie/coding_rules.md` (Coding standards: Simplicity, useEffect avoidance, etc.)
+
+**Conflict Resolution:**
+If any rule in the `.junie/` directory contradicts a rule defined here in `.clauderules`, the rule in `.clauderules` takes precedence.

@@ -1,4 +1,4 @@
-import {Pagination} from "@/app/types/common";
+import {Origin, Pagination} from "@/app/types/common";
 
 export type SearchAlbumsResult ={
     albums: AlbumShort[],
@@ -10,7 +10,7 @@ export type AlbumShort = {
     title: string,
     year?: string,
     artist: Artist,
-    origin: "Discogs" | "Last.fm"
+    origin: Origin,
     url?: string,
     images?: Image[],
 }
@@ -18,8 +18,11 @@ export type AlbumShort = {
 export type Album = {
     id: string,
     title: string,
-    genres: string[],
-    styles: string[],
+    origin: Origin,
+    genres?: string[],
+    styles?: string[],
+    tags?: string[],
+    released?: string,
     year?: number,
     artists: Artist[],
     tracks: Track[],

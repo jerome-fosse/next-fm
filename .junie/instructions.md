@@ -1,8 +1,8 @@
-### Directives de l'utilisateur
+### User Directives
 
-1. **Consentement pour les modifications** : L'agent ne doit JAMAIS modifier de fichiers (création, édition, suppression) sans l'accord explicite de l'utilisateur.
-2. **Processus de modification** :
-    - Analyser le problème.
-    - Proposer la solution et les extraits de code dans la conversation.
-    - Attendre la validation de l'utilisateur (ex: "Applique", "C'est bon").
-    - Une fois l'accord reçu, effectuer les modifications techniques.
+1. **Consent for Modifications**: The agent must NEVER modify files (creation, edition, deletion) without explicit consent from the user.
+2. **Modification Process**:
+    - Analyze the problem.
+    - Propose the solution and code snippets in the conversation.
+    - Wait for user validation (e.g., "Apply", "Looks good").
+    - Once agreement is received, perform the technical modifications.

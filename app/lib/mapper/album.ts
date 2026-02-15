@@ -1,6 +1,8 @@
 import {DiscogsMaster, DiscogsSearchResultItem} from "@/app/lib/http/discogs";
 import {Album, AlbumShort} from "@/app/types/albums";
-import {LastFmAlbum} from "@/app/lib/http/lastfm";
+import {LastFmAlbum, LastFmAlbumInfos} from "@/app/lib/http/lastfm";
+import {secondsToDuration} from "@/app/lib/mapper/common";
+import {logger} from "@/app/lib/logger";
 
 export function discogsSearchResultItemToAlbumShort(item: DiscogsSearchResultItem): AlbumShort {
     const [artistName, albumTitle] = item.title.split(' - ')
@@ -19,7 +21,7 @@ export function discogsSearchResultItemToAlbumShort(item: DiscogsSearchResultIte
     }
 }
 
-export function lastfmSearchResultItemToAlbumShort(item: LastFmAlbum): AlbumShort {
+export function lastfmSearchResultItemToAlbumShort(item: LastFmAlbumInfos): AlbumShort {
     return {
         id: item.mbid,
         title: item.name,
@@ -39,6 +41,7 @@ export function discogsMasterToAlbum(item: DiscogsMaster): Album {
     return {
         id: item.id.toString(10),
         title: item.title,
+        origin: "Discogs",
         genres: item.genres,
         styles: item.styles,
         year: item.year,
@@ -58,5 +61,28 @@ export function discogsMasterToAlbum(item: DiscogsMaster): Album {
             uri: image.uri
         })),
 
+    }
+}
+
+export function lastfmAlbumToAlbum(item: LastFmAlbum): Album {
+    logger.debug("lastfmAlbumToAlbum: item=", item);
+
+    return {
+        id: item.id ?? '',
+        title: item.name,
+        origin: "Last.fm",
+        tags: item.tags.tag?.map(tag => tag.name),
+        released: item.releasedate,
+        artists: [{id: '', name: item.artist, roles: ''}],
+        tracks: item.tracks?.track.map(track => ({
+            position: track["@attr"].rank.toString(10),
+            title: track.name,
+            duration: secondsToDuration(track.duration ?? 0),
+            artists: [{id: track.artist.mbid, name: track.artist.name, roles: ''}],
+        })),
+        images: item.image.map(image => ({
+            size: image.size,
+            uri: image["#text"],
+        })),
     }
 }

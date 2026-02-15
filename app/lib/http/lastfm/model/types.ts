@@ -9,7 +9,7 @@ export type SearchParams = {
     page?: number,
 }
 
-export type GetAlbumInfoParams = {
+export type AlbumInfoParams = {
     // The artist name. Required unless using mbid.
     artist?: string,
     // The album name. Required unless using mbid.
@@ -36,7 +36,7 @@ export type LastFmAlbumSearchResponse = {
         "opensearch:startIndex": string
         "opensearch:itemsPerPage": string
         albummatches: {
-            album: LastFmAlbum[]
+            album: LastFmAlbumInfos[]
         }
         "@attr": {
             for: string
@@ -45,23 +45,31 @@ export type LastFmAlbumSearchResponse = {
 }
 
 export type LastFmGetAlbumInfoResponse = {
-    album: LastFmAlbumInfo
+    album: LastFmAlbum
 }
 
-export type LastFmAlbumInfo = {
-    name: string
-    artist: string
-    url: string
-    listeners: string
-    image: LastFmImage[]
+export type LastFmAlbum = {
+    id: string,
+    mbid: string,
+    name: string,
+    artist: string,
+    url: string,
+    releasedate: string,
+    listeners: string,
+    image: LastFmImage[],
     tracks: {
-        track: LastFmAlbumTrack[]
-    }
-    tags: string
-    playcount: string
+        track: LastFmTrack[],
+    },
+    tags: {
+        tag: {
+            url: string,
+            name: string,
+        }[],
+    },
+    playcount: string,
 }
 
-export type LastFmAlbumTrack = {
+export type LastFmTrack = {
     streamable: {
         fulltrack: string
         "#text": string
@@ -79,7 +87,7 @@ export type LastFmAlbumTrack = {
     }
 }
 
-export type LastFmAlbum = {
+export type LastFmAlbumInfos = {
     name: string
     artist: string
     url: string

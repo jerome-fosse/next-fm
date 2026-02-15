@@ -1,11 +1,11 @@
 import AlbumThumbnail from "@/app/ui/dashboard/album-thumb";
-import {Pagination} from "@/app/types/common";
+import {DISCOGS, LASTFM, Pagination} from "@/app/types/common";
 import {Album, AlbumShort} from "@/app/types/albums";
 import PaginationControl from "@/app/ui/common/pagination";
 import {logger} from "@/app/lib/logger";
 import {memo, useRef, useState, useTransition} from "react";
-import {getDiscogsMasterReleaseById} from "@/app/lib/data/discogs";
 import AlbumDetails from "@/app/ui/dashboard/album-details";
+import {fetchAlbumAction} from "@/app/lib/actions/album";
 
 export type Props = {
     className?: string,
@@ -28,9 +28,20 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
     const modalRef = useRef<HTMLDialogElement>(null);
     const [isPending, startTransition] = useTransition();
     const [album, setAlbum] = useState<Album | undefined>();
-    const handleShowAlbum = (id: string) => {
+    const handleShowAlbum = (album: AlbumShort) => {
         startTransition(async () => {
-            const data = await getDiscogsMasterReleaseById(parseInt(id, 10));
+            let data = undefined
+
+            switch (album.origin) {
+                case DISCOGS:
+                    data = await fetchAlbumAction({id: album.id, origin: album.origin});
+                    break;
+                case LASTFM:
+                    data = await fetchAlbumAction({id: album.id, title: album.title, artist: album.artist.name, origin: album.origin});
+                    break;
+                default:
+                    throw new Error(`Unknown album origin: ${origin}`);
+            }
             setAlbum(data);
             modalRef.current?.showModal()
         })
@@ -64,8 +75,9 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
                     {albums.map((album, index) =>
                         <div key={index}
                              className={`mx-1 my-2 p-2 h-fit border border-gray-300 rounded-md shadow-md cursor-pointer hover:shadow-lg hover:shadow-blue-500/50`}>
-                            <AlbumThumbnail album={album} handleImageLoad={handleImageLoad}
-                                            showDetailAction={() => handleShowAlbum(album.id)} />
+                            <AlbumThumbnail key={`${album.origin}_${album.artist}_${album.title}_${album.id}`}
+                                            album={album} handleImageLoad={handleImageLoad}
+                                            showDetailAction={() => handleShowAlbum(album)} />
                         </div>
                     )}
             </div>
