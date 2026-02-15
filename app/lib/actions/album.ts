@@ -6,6 +6,7 @@ import {DISCOGS, LASTFM, Origin, ORIGINS, Pagination} from "@/app/types/common";
 import {fetchLastfmAlbumByIdOrNameAndArtist, searchLastfmAlbums} from "@/app/lib/data/lastfm";
 import {logger} from "@/app/lib/logger";
 import {z} from "zod";
+import {zfd} from "zod-form-data";
 
 export type SearchAlbumsState = {
     query: string,
@@ -23,21 +24,22 @@ export type FetchAlbumParams = {
 }
 
 export async function searchAlbumsAction(prevState: SearchAlbumsState, formData: FormData) {
-    const SearchParams = z.object({
-        query: z.string().min(1, "Une requête de recherche est obligatoire."),
-        searchapi: z.literal(["Discogs", "Last.fm"], "Seules les API Discogs et Last.fm sont supportées."),
-        page: z.coerce.number().int().min(1).optional().default(1),
-    })
+    const schema = zfd.formData({
+        query: zfd.text(z.string().min(1, "Une requête de recherche est obligatoire.")),
+        searchapi: zfd.text(z.enum(ORIGINS, {
+            error: "Seules les API Discogs et Last.fm sont supportées."
+        })),
+        page: zfd.numeric(z.number().int().min(1).default(1)),
+    });
 
-    const formEntries = Object.fromEntries(formData.entries());
-    const parsed = SearchParams.safeParse(formEntries);
+    const parsed = schema.safeParse(formData);
 
     if (!parsed.success) {
         logger.error("Paramètres de recherche invalides:", parsed.error.message);
         return {
-            query: formEntries.query,
-            searchApi: formEntries.searchapi,
-            error: `Paramètres de recherche invalides.`,
+            query: formData.get('query')?.toString() || "",
+            searchApi: formData.get('searchapi')?.toString() || "",
+            error: new Error('Paramètres de recherche invalides.'),
             albums: undefined,
             pagination: undefined
         };

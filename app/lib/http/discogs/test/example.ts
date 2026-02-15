@@ -7,7 +7,7 @@ discogsClient.search({query: "Vacuous in his blood", type: "master", per_page: 1
     .then(response => {
         console.log(response.data);
 
-        discogsClient.masterById(response.data.results[0].id)
+        discogsClient.masterReleaseById(response.data.results[0].id)
             .then(response => console.log(response.data))
             .catch(error => console.error(error))
     })

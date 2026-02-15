@@ -72,9 +72,9 @@ Feel free to [open an issue](https://github.com/jerome-fosse/next-fm/issues) to 
    DISCOGS_API_KEY=your_key
    LASTFM_API_KEY=your_key
    ```
-4. Run the development server:
+4. Run the server:
    ```bash
-   npm run dev
+   npm run build && npm run start
    ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
