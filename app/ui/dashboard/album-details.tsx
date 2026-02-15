@@ -39,13 +39,13 @@ const AlbumDetails = memo(function showAlbumDetails({className, album}: Props) {
                     <p className="text-md font-bold">{album.title}</p>
                     <p className="flex-1 text-sm">{album.artists.map(artist => artist.name).join(', ')}</p>
                     {album.year &&
-                        <div className="flex text-sm">
+                        <div className="flex text-sm my-0.5">
                             <div className="w-20 font-italic">Année :</div>
                             <div>{album.year}</div>
                         </div>
                     }
                     {album.released &&
-                        <div className="flex text-sm">
+                        <div className="flex text-sm my-0.5">
                             <div className="w-20 font-italic">Date de sortie :</div>
                             <div>{album.released}</div>
                         </div>

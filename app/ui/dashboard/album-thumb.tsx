@@ -41,7 +41,7 @@ export default function AlbumThumbnail({album, showOriginButton = true, showDeta
                        fill={true} sizes="160px" onLoad={handleImageLoad} unoptimized={true} onError={handleImageError} />
                 {showOriginButton && album.origin && album.url &&
                     <a className="absolute btn btn-circle btn-neutral bottom-0 right-0 opacity-50 group-hover:opacity-100"
-                       href={album.url} target="_blank" rel="noopener noreferrer">
+                       href={album.url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
                         {originButton(album)}
                     </a>
                 }
