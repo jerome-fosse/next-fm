@@ -16,13 +16,13 @@ const menuItems = [
     {
         type: 'MenuItem',
         text: 'Album',
-        path: '/home/scrobble/album',
+        path: '/dashboard/scrobble/album',
         icon: PiVinylRecord
     },
     {
         type: 'MenuItem',
         text: 'Setlist',
-        path: '/home/scrobble/setlist',
+        path: '/dashboard/scrobble/setlist',
         icon: PiMicrophoneStage
     },
     {
