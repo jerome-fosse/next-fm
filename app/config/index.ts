@@ -10,6 +10,7 @@ const envSchema = z.object({
 
     // Last.fm
     LASTFM_API_KEY: z.string().min(1, "LASTFM_API_KEY est manquant"),
+    LASTFM_SECRET: z.string().min(1, "LASTFM_SECRET est manquant"),
     LASTFM_BASE_URL: z.url().default('https://ws.audioscrobbler.com'),
     LASTFM_TIMEOUT: z.coerce.number().min(1000).default(3000),
     LASTFM_SEARCH_PAGE_SIZE: z.coerce.number().int().min(10).max(50).default(30),
@@ -39,6 +40,7 @@ const config = {
     },
     lastfm: {
         apiKey: parsed.data.LASTFM_API_KEY,
+        secret: parsed.data.LASTFM_SECRET,
         baseUrl: parsed.data.LASTFM_BASE_URL,
         timeout: parsed.data.LASTFM_TIMEOUT,
         searchPageSize: parsed.data.LASTFM_SEARCH_PAGE_SIZE,

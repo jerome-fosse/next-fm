@@ -71,6 +71,7 @@ Feel free to [open an issue](https://github.com/jerome-fosse/next-fm/issues) to 
    ```env
    DISCOGS_API_KEY=your_key
    LASTFM_API_KEY=your_key
+   LASTFM_SECRET=your_secret
    ```
 4. Run the server:
    ```bash

@@ -65,8 +65,6 @@ export function discogsMasterToAlbum(item: DiscogsMaster): Album {
 }
 
 export function lastfmAlbumToAlbum(item: LastFmAlbum): Album {
-    logger.debug("lastfmAlbumToAlbum: item=", item);
-
     return {
         id: item.id ?? '',
         title: item.name,

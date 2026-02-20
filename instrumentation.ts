@@ -12,6 +12,7 @@ export function register() {
         lastfm: {
             ...config.lastfm,
             apiKey: '*******',
+            secret: '*******',
         }
     })
 }
