@@ -16,3 +16,9 @@ export type Pagination = {
         last?: string
     }
 };
+
+export type Error = {
+    code?: string,
+    type: "error" | "warning"
+    message: string
+}

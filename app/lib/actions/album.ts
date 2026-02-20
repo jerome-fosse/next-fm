@@ -8,13 +8,9 @@ import {logger} from "@/app/lib/logger";
 import {z} from "zod";
 import {zfd} from "zod-form-data";
 
-export type SearchAlbumsState = {
-    query: string,
-    searchApi: string,
-    error?: string,
-    albums?: AlbumShort[],
-    pagination?: Pagination,
-}
+export type SearchAlbumsState =
+    | { query: string, searchApi: string, error?: never, albums?: AlbumShort[], pagination?: Pagination}
+    | { query: string, searchApi: string, error?: string, albums?: never, pagination?: never}
 
 export type FetchAlbumParams = {
     id?: string,
@@ -44,33 +40,45 @@ export async function searchAlbumsAction(prevState: SearchAlbumsState, formData:
             query: formData.get('query')?.toString() || "",
             searchApi: formData.get('searchapi')?.toString() || "",
             error: "Paramètres de recherche invalides.",
+        };
+    }
+    
+    logger.debug("searchAlbumsAction:", "SearchParams=", parsed.data);
+
+    try {
+        let data: SearchAlbumsResult;
+
+        switch (parsed.data.searchapi) {
+            case DISCOGS:
+                data = await searchDiscogsAlbums(parsed.data.query, parsed.data.page);
+                break;
+            case LASTFM:
+                data = await searchLastfmAlbums(parsed.data.query, parsed.data.page);
+                break;
+            default:
+                return {
+                    query: parsed.data.query,
+                    searchApi: parsed.data.searchapi,
+                    error: "API de recherche non supportée",
+                }
+        }
+
+        return {
+            query: parsed.data.query,
+            searchApi: parsed.data.searchapi,
+            albums: data.albums,
+            pagination: data.pagination
+        };
+    } catch (error) {
+        logger.error("Erreur lors de la recherche:", error);
+        return {
+            query: parsed.data.query,
+            searchApi: parsed.data.searchapi,
+            error: error instanceof Error ? `Une erreur s'est produite : ${error.message}` : "Une erreur inattendue s'est produite.",
             albums: undefined,
             pagination: undefined
         };
     }
-
-    logger.debug("searchAlbumsAction:", "SearchParams=", parsed.data);
-
-    let data: SearchAlbumsResult;
-
-    switch (parsed.data.searchapi) {
-        case DISCOGS:
-            data = await searchDiscogsAlbums(parsed.data.query, parsed.data.page);
-            break;
-        case LASTFM:
-            data = await searchLastfmAlbums(parsed.data.query, parsed.data.page);
-            break;
-        default:
-            throw new Error("API de recherche non supportée");
-    }
-
-    return {
-        query: parsed.data.query,
-        searchApi: parsed.data.searchapi,
-        error: undefined,
-        albums: data.albums,
-        pagination: data.pagination
-    };
 }
 
 export async function fetchAlbumAction(params: FetchAlbumParams): Promise<FetchAlbumResult> {
@@ -106,13 +114,13 @@ export async function fetchAlbumAction(params: FetchAlbumParams): Promise<FetchA
         switch (parsed.data.origin) {
             case DISCOGS:
                 if (!parsed.data.idDiscogs) {
-                    throw new Error("L'id est obligatoire pour Discogs.");
+                    return {error: "L'id est obligatoire pour Discogs."};
                 }
                 return {album: await fetchDiscogsMasterReleaseById(parsed.data.idDiscogs)};
             case LASTFM:
                 return {album: await fetchLastfmAlbumByIdOrNameAndArtist(parsed.data.idLastfm, parsed.data.title, parsed.data.artist)};
             default:
-                throw {error: `Cette API n'est pas supportée: ${origin}`};
+                return {error: `${origin} n'est pas une API supportée.`};
         }
     } catch (error) {
         return {error: error instanceof Error ? error.message : "Une erreur inattendue s'est produite."};

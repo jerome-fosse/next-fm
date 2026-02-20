@@ -6,7 +6,7 @@ import {logger} from "@/app/lib/logger";
 import {memo, useRef, useState, useTransition} from "react";
 import AlbumDetails from "@/app/ui/dashboard/album-details";
 import {fetchAlbumAction} from "@/app/lib/actions/album";
-import { MdErrorOutline } from "react-icons/md";
+import AlertDialog from "@/app/ui/common/alert-dialog";
 
 export type Props = {
     className?: string,
@@ -111,27 +111,7 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
                 </div>
             </dialog>
 
-            <dialog ref={errorModal} className="modal">
-                <div className="modal-box">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost border-none absolute right-2 top-2">✕</button>
-                    </form>
-
-                    <h3 className="font-bold text-lg text-error flex items-center gap-2">
-                        <MdErrorOutline className="h-6 w-6 shrink-0 stroke-current"/>
-                        Erreur
-                    </h3>
-                    <p className="py-4 text-sm">{error}</p>
-                    <div className="modal-action">
-                        <form method="dialog">
-                            <button className="btn btn-error btn-soft btn-sm w-24">OK</button>
-                        </form>
-                    </div>
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
+            <AlertDialog ref={errorModal} message={error ?? ''} />
 
         </div>
 )
