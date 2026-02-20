@@ -6,6 +6,7 @@ import {logger} from "@/app/lib/logger";
 import {memo, useRef, useState, useTransition} from "react";
 import AlbumDetails from "@/app/ui/dashboard/album-details";
 import {fetchAlbumAction} from "@/app/lib/actions/album";
+import { MdErrorOutline } from "react-icons/md";
 
 export type Props = {
     className?: string,
@@ -25,9 +26,12 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
 
     logger.debug("SearchAlbumsResult Params:", "className=", className, "albums=", albums, "pagination=", pagination);
 
-    const modalRef = useRef<HTMLDialogElement>(null);
+    const albumModal = useRef<HTMLDialogElement>(null);
+    const errorModal = useRef<HTMLDialogElement>(null);
     const [isPending, startTransition] = useTransition();
     const [album, setAlbum] = useState<Album | undefined>();
+    const [error, setError] = useState<string | undefined>();
+
     const handleShowAlbum = (album: AlbumShort) => {
         startTransition(async () => {
             let data = undefined
@@ -42,8 +46,16 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
                 default:
                     throw new Error(`Unknown album origin: ${origin}`);
             }
-            setAlbum(data);
-            modalRef.current?.showModal()
+
+            if (data.error) {
+                setError(data.error);
+                setAlbum(undefined);
+                errorModal.current?.showModal();
+            } else {
+                setAlbum(data.album);
+                setError(undefined);
+                albumModal.current?.showModal();
+            }
         })
     }
 
@@ -83,10 +95,12 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
             </div>
             {pagination && pagination.pages > 1 &&
                 <div className={`flex justify-center items-center w-full h-16 px-4 ${pending ? 'btn-disabled' : ''} text-sm bg-secondary-content border border-gray-300 rounded-b-md`}>
-                <PaginationControl page={pagination.page} pages={pagination.pages} onChangePage={onChangePage} />
-            </div>}
-            <dialog ref={modalRef} className="modal">
-                <div className="modal-box max-w-2xl max-h-4/6 flex flex-col">
+                    <PaginationControl page={pagination.page} pages={pagination.pages} onChangePage={onChangePage} />
+                </div>
+            }
+
+            <dialog ref={albumModal} className="modal">
+                <div className="modal-box max-w-2xl max-h-5/6 flex flex-col">
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost border-none absolute right-2 top-2">X</button>
                     </form>
@@ -96,8 +110,31 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
                     </div>
                 </div>
             </dialog>
+
+            <dialog ref={errorModal} className="modal">
+                <div className="modal-box">
+                    <form method="dialog">
+                        <button className="btn btn-sm btn-circle btn-ghost border-none absolute right-2 top-2">✕</button>
+                    </form>
+
+                    <h3 className="font-bold text-lg text-error flex items-center gap-2">
+                        <MdErrorOutline className="h-6 w-6 shrink-0 stroke-current"/>
+                        Erreur
+                    </h3>
+                    <p className="py-4 text-sm">{error}</p>
+                    <div className="modal-action">
+                        <form method="dialog">
+                            <button className="btn btn-error btn-soft btn-sm w-24">OK</button>
+                        </form>
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+
         </div>
-    )
+)
 });
 
 export default SearchAlbumsResult;

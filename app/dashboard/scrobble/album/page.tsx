@@ -10,7 +10,7 @@ export default function Page() {
     const initialState: SearchAlbumsState = {
         query: "",
         searchApi: "",
-        error: undefined,
+        error: "",
         albums: undefined,
         pagination: undefined
     }

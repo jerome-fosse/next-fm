@@ -11,7 +11,7 @@ import {zfd} from "zod-form-data";
 export type SearchAlbumsState = {
     query: string,
     searchApi: string,
-    error?: Error,
+    error?: string,
     albums?: AlbumShort[],
     pagination?: Pagination,
 }
@@ -22,6 +22,10 @@ export type FetchAlbumParams = {
     artist?: string,
     origin: Origin,
 }
+
+export type FetchAlbumResult =
+    | { album: Album; error?: never }
+    | { album?: never; error: string }
 
 export async function searchAlbumsAction(prevState: SearchAlbumsState, formData: FormData) {
     const schema = zfd.formData({
@@ -39,7 +43,7 @@ export async function searchAlbumsAction(prevState: SearchAlbumsState, formData:
         return {
             query: formData.get('query')?.toString() || "",
             searchApi: formData.get('searchapi')?.toString() || "",
-            error: new Error('Paramètres de recherche invalides.'),
+            error: "Paramètres de recherche invalides.",
             albums: undefined,
             pagination: undefined
         };
@@ -50,10 +54,10 @@ export async function searchAlbumsAction(prevState: SearchAlbumsState, formData:
     let data: SearchAlbumsResult;
 
     switch (parsed.data.searchapi) {
-        case "Discogs":
+        case DISCOGS:
             data = await searchDiscogsAlbums(parsed.data.query, parsed.data.page);
             break;
-        case "Last.fm":
+        case LASTFM:
             data = await searchLastfmAlbums(parsed.data.query, parsed.data.page);
             break;
         default:
@@ -69,7 +73,7 @@ export async function searchAlbumsAction(prevState: SearchAlbumsState, formData:
     };
 }
 
-export async function fetchAlbumAction(params: FetchAlbumParams): Promise<Album> {
+export async function fetchAlbumAction(params: FetchAlbumParams): Promise<FetchAlbumResult> {
     logger.debug("fetchAlbumAction:", "params=", params);
 
     const schema = z.object({
@@ -95,19 +99,22 @@ export async function fetchAlbumAction(params: FetchAlbumParams): Promise<Album>
     });
     if (!parsed.success) {
         logger.error("Paramètres d'album invalides:", parsed.error.message);
-        throw new Error("Les parametres d'album sont invalides.");
+        return {error: "Les parametres d'album sont invalides."};
     }
 
-    switch (parsed.data.origin) {
-        case DISCOGS:
-            if (!parsed.data.idDiscogs) {
-                throw new Error("L'id est obligatoire pour Discogs.");
-            }
-
-            return await fetchDiscogsMasterReleaseById(parsed.data.idDiscogs);
-        case LASTFM:
-            return await fetchLastfmAlbumByIdOrNameAndArtist(parsed.data.idLastfm, parsed.data.title, parsed.data.artist);
-        default:
-            throw new Error(`Cette origine est non supportée: ${origin}`);
+    try {
+        switch (parsed.data.origin) {
+            case DISCOGS:
+                if (!parsed.data.idDiscogs) {
+                    throw new Error("L'id est obligatoire pour Discogs.");
+                }
+                return {album: await fetchDiscogsMasterReleaseById(parsed.data.idDiscogs)};
+            case LASTFM:
+                return {album: await fetchLastfmAlbumByIdOrNameAndArtist(parsed.data.idLastfm, parsed.data.title, parsed.data.artist)};
+            default:
+                throw {error: `Cette API n'est pas supportée: ${origin}`};
+        }
+    } catch (error) {
+        return {error: error instanceof Error ? error.message : "Une erreur inattendue s'est produite."};
     }
 }
