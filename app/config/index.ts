@@ -38,6 +38,24 @@ if (!parsed.success) {
     throw new Error("Configuration invalide.");
 }
 
+const storageConfigSchema = z.discriminatedUnion('type', [
+    z.object({ type: z.literal('fs'), path: z.string().min(1) }),
+    z.object({ type: z.literal('s3'), bucket: z.string().min(1), path: z.string().min(1) }),
+]);
+
+type StorageConfig = z.infer<typeof storageConfigSchema>;
+
+const storageMap = new Map<string, StorageConfig>();
+for (const [key, value] of Object.entries(process.env)) {
+    if (!key.startsWith('STORAGE_') || !value) continue;
+    const name = key.substring('STORAGE_'.length).toLowerCase();
+    try {
+        storageMap.set(name, storageConfigSchema.parse(JSON.parse(value)));
+    } catch {
+        logger.error(`Configuration invalide pour ${key}`);
+    }
+}
+
 const config = {
     userAgent: parsed.data.USER_AGENT,
     isDev: parsed.data.NODE_ENV === 'development',
@@ -55,6 +73,7 @@ const config = {
         timeout: parsed.data.LASTFM_TIMEOUT,
         searchPageSize: parsed.data.LASTFM_SEARCH_PAGE_SIZE,
     },
+    storage: storageMap,
     cache:{
         discogs: {
             albums: {
