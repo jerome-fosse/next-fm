@@ -9,6 +9,7 @@
 [![DaisyUI](https://img.shields.io/badge/DaisyUI-5.5.18-5AD7E4?logo=daisyui)](https://daisyui.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Zod](https://img.shields.io/badge/Zod-4.3.6-3E67B1?logo=zod)](https://zod.dev/)
+[![lru-cache](https://img.shields.io/badge/lru--cache-11.x-orange)](https://github.com/isaacs/node-lru-cache)
 
 **Next-FM** is a modern web application designed to search and explore music albums using Discogs and Last.fm APIs.
 
@@ -28,6 +29,7 @@ Next-FM is a personal project primarily created to improve my skills and experti
 - **UI Components**: DaisyUI 5
 - **Styling**: Tailwind CSS 4
 - **Validation**: Zod
+- **Cache**: lru-cache
 - **Icons**: React Icons
 - **Language**: TypeScript
 
@@ -38,6 +40,7 @@ Next-FM is a personal project primarily created to improve my skills and experti
 - 📝 **Detailed Information**: View tracklists, genres, and styles for each album.
 - 🔗 **Direct Links**: Quick access to original album pages on Discogs/Last.fm.
 - ⚡ **Modern UI**: Built with Next.js 16, Tailwind CSS 4, and DaisyUI.
+- 🚀 **API Caching**: In-memory LRU cache on all API calls to improve performance and handle rate limiting efficiently.
 
 ## 🗺️ Roadmap
 

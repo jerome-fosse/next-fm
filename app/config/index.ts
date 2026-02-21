@@ -15,6 +15,16 @@ const envSchema = z.object({
     LASTFM_TIMEOUT: z.coerce.number().min(1000).default(3000),
     LASTFM_SEARCH_PAGE_SIZE: z.coerce.number().int().min(10).max(50).default(30),
 
+    // Cache
+    CACHE_DISCOGS_ALBUMS_CAPACITY: z.coerce.number().int().min(1).default(100),
+    CACHE_DISCOGS_ALBUMS_TTL: z.coerce.number().int().min(1).default(600000), // 10 minutes
+    CACHE_DISCOGS_SEARCH_CAPACITY: z.coerce.number().int().min(1).default(100),
+    CACHE_DISCOGS_SEARCH_TTL: z.coerce.number().int().min(1).default(600000), // 10 minutes
+    CACHE_LASTFM_ALBUMS_CAPACITY: z.coerce.number().int().min(1).default(100),
+    CACHE_LASTFM_ALBUMS_TTL: z.coerce.number().int().min(1).default(600000), // 10 minutes
+    CACHE_LASTFM_SEARCH_CAPACITY: z.coerce.number().int().min(1).default(100),
+    CACHE_LASTFM_SEARCH_TTL: z.coerce.number().int().min(1).default(600000), // 10 minutes
+
     // Application
     USER_AGENT: z.string().default('Next.fm/0.1.0 (https://github.com/jerome-fosse/next-fm)'),
 
@@ -44,7 +54,29 @@ const config = {
         baseUrl: parsed.data.LASTFM_BASE_URL,
         timeout: parsed.data.LASTFM_TIMEOUT,
         searchPageSize: parsed.data.LASTFM_SEARCH_PAGE_SIZE,
-    }
+    },
+    cache:{
+        discogs: {
+            albums: {
+                capacity: parsed.data.CACHE_DISCOGS_ALBUMS_CAPACITY,
+                ttl: parsed.data.CACHE_DISCOGS_ALBUMS_TTL,
+            },
+            search: {
+                capacity: parsed.data.CACHE_DISCOGS_SEARCH_CAPACITY,
+                ttl: parsed.data.CACHE_DISCOGS_SEARCH_TTL,
+            },
+        },
+        lastfm: {
+            albums: {
+                capacity: parsed.data.CACHE_LASTFM_ALBUMS_CAPACITY,
+                ttl: parsed.data.CACHE_LASTFM_ALBUMS_TTL,
+            },
+            search: {
+                capacity: parsed.data.CACHE_LASTFM_SEARCH_CAPACITY,
+                ttl: parsed.data.CACHE_LASTFM_SEARCH_TTL,
+            },
+        },
+    },
 }
 
 export default config;

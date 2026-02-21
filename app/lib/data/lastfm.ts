@@ -5,12 +5,31 @@ import {Album, SearchAlbumsResult} from "@/app/types/albums";
 import {lastfmAlbumToAlbum, lastfmSearchResultItemToAlbumShort} from "@/app/lib/mapper/album";
 import {logger} from "@/app/lib/logger";
 import config from "@/app/config";
+import {LRUCache} from "lru-cache";
 
 const api = lastfm.createClientWithDefaultConfig();
 const searchAlbumsPageSize = config.lastfm.searchPageSize;
+const searchCache = new LRUCache<string, SearchAlbumsResult>({
+    max: config.cache.lastfm.search.capacity,
+    ttl: config.cache.lastfm.search.ttl,
+    onInsert: (value, key) => logger.debug(`SearchAlbumsResult with key ${key} inserted in Last.fm cache.`)
+});
+const albumsCache = new LRUCache<string, Album>({
+    max: config.cache.lastfm.albums.capacity,
+    ttl: config.cache.lastfm.albums.ttl,
+    onInsert: (value, key) => logger.debug(`Album with key ${key} inserted in Last.fm cache.`)
+});
 
 export async function searchLastfmAlbums(query: string, page: number = 1): Promise<SearchAlbumsResult> {
     logger.debug("Last.fm: Searching albums for =>", "query=", query, "page=", page);
+
+    const key = `${query}-${page}`;
+
+    if (searchCache.has(key)) {
+        const result = searchCache.get(key);
+        logger.debug(`SearchAlbumsResult with key ${key} fetched from Last.fm cache.`);
+        return result!;
+    }
 
     return api.search({album: query, page: page, limit: searchAlbumsPageSize})
         .then(response => {
@@ -23,20 +42,26 @@ export async function searchLastfmAlbums(query: string, page: number = 1): Promi
                 urls: {},
             }
 
-            return {
-                albums: albums,
-                pagination: pagination,
-            }
+            const result = {albums: albums, pagination: pagination};
+            searchCache.set(key, result);
+            return result;
         })
         .catch((error) => {
             logger.error("Error fetching albums from Last.fm:", error);
             throw new Error("Erreur lors de la recherche sur Last.fm", error);
-        })
-        ;
+        });
 }
 
 export async function fetchLastfmAlbumByIdOrNameAndArtist(id: string = '', title: string = '', artist: string = ''): Promise<Album> {
     logger.debug("Last.fm: Fetching album by id: ", "id=", id, "title=", title, "artist=", artist);
+
+    const key = id !== '' && id != null ? id : `${artist}-${title}`;
+
+    if (albumsCache.has(key)) {
+        const album = albumsCache.get(key);
+        logger.debug(`Album with key ${key} fetched from Last.fm cache.`);
+        return album!;
+    }
 
     let params: AlbumInfoParams = {mbid: id, autocorrect: 1};
     if (id === '' || id == null) {
@@ -44,9 +69,13 @@ export async function fetchLastfmAlbumByIdOrNameAndArtist(id: string = '', title
     }
 
     return api.getAlbumInfo(params)
-        .then(response => lastfmAlbumToAlbum(response.data.album))
+        .then(response => {
+            const album = lastfmAlbumToAlbum(response.data.album);
+            albumsCache.set(key, album);
+            return album;
+        })
         .catch((error) => {
             logger.error("Error fetching album from Last.fm:", error);
             throw new Error("Erreur lors de la récupération de l'album sur Last.fm", error);
-        })
+        });
 }
