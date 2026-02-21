@@ -101,3 +101,11 @@ export type LastFmImage = {
     size: "small" | "medium" | "large" | "extralarge" | "mega" | ""
 }
 
+export type LastFmGetSessionResponse = {
+    session: {
+        name: string,
+        key: string,
+        subscriber: string
+    }
+}
+

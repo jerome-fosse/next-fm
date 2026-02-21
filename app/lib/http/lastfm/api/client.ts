@@ -3,13 +3,15 @@ import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {
     AlbumInfoParams,
     LastFmAlbumSearchResponse,
-    LastFmGetAlbumInfoResponse,
+    LastFmGetAlbumInfoResponse, LastFmGetSessionResponse,
     SearchParams
 } from "@/app/lib/http/lastfm/model/types";
 import config from "@/app/config";
+import crypto from "crypto";
 
 export type LastfmConfiguration = {
     apiKey: string,
+    secret: string,
     baseUrl?: string,
     timeout?: number,
     userAgent?: string,
@@ -18,6 +20,7 @@ export type LastfmConfiguration = {
 export interface Client {
     search(params: SearchParams): Promise<AxiosResponse<LastFmAlbumSearchResponse>>,
     getAlbumInfo(params: AlbumInfoParams): Promise<AxiosResponse<LastFmGetAlbumInfoResponse>>
+    getSession(token: string): Promise<AxiosResponse<LastFmGetSessionResponse>>
 }
 
 class LastFMClient implements Client {
@@ -58,6 +61,21 @@ class LastFMClient implements Client {
             }
         })
     }
+
+    public getSession(token: string): Promise<AxiosResponse<LastFmGetSessionResponse>> {
+        const sig = `api_key${this.cfg.apiKey}methodauth.getSessiontoken${token}${this.cfg.secret}`;
+        const hash = crypto.createHash('md5').update(sig).digest('hex')
+
+        return this.api.get<LastFmGetSessionResponse>("/2.0/", {
+            params: {
+                method: "auth.getSession",
+                token: token,
+                api_key: this.cfg.apiKey,
+                api_sig: hash,
+                format: "json",
+            }
+        })
+    }
 }
 
 class LastFM {
@@ -76,6 +94,7 @@ class LastFM {
     public defaultConfig(): LastfmConfiguration {
         return {
             apiKey: config.lastfm.apiKey,
+            secret: config.lastfm.secret,
             baseUrl: config.lastfm.baseUrl,
             timeout: config.lastfm.timeout,
             userAgent: config.userAgent
@@ -84,16 +103,19 @@ class LastFM {
 
     private checkConfig(config: LastfmConfiguration) {
         if (config.apiKey === "") {
-            throw new Error("Missing LASTFM_API_KEY in index...");
+            throw new Error("Missing LASTFM_API_KEY in config...");
+        }
+        if (config.secret === "") {
+            throw new Error("Missing LASTFM_SECRET in config...");
         }
         if (config.baseUrl === "") {
-            throw new Error("Missing LASTFM_BASE_URL in index...");
+            throw new Error("Missing LASTFM_BASE_URL in config...");
         }
         if (config.timeout === null) {
-            throw new Error("Missing LASTFM_TIMEOUT in index...");
+            throw new Error("Missing LASTFM_TIMEOUT in config...");
         }
         if (config.userAgent === "") {
-            throw new Error("Missing USER_AGENT in index...");
+            throw new Error("Missing USER_AGENT in config...");
         }
     }
 }
