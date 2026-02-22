@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const protocol = request.headers.get('x-forwarded-proto') ?? 'http';
 
     const response = NextResponse.redirect(new URL('/dashboard', `${protocol}://${host}`));
-    response.cookies.set('nextfm-session', result.session.user, {
+    response.cookies.set('nextfm-session', JSON.stringify({ username: result.session.user }), {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
