@@ -3,28 +3,32 @@ import path from 'path';
 import { Storage } from '@/app/lib/storage';
 import { Option, some, none } from '@/app/types/option';
 
+function isFileDoesNotExistError(error: unknown): error is NodeJS.ErrnoException {
+    return error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT';
+}
+
 export class FsStorage implements Storage {
     constructor(private readonly basePath: string) {}
 
-    async write<T>(filename: string, data: T): Promise<void> {
-        await fs.mkdir(this.basePath, { recursive: true });
+    async write(filename: string, data: string): Promise<void> {
+        const absolutePath = path.resolve(process.cwd(), this.basePath);
+        await fs.mkdir(absolutePath, { recursive: true });
         await fs.writeFile(
-            path.join(this.basePath, `${filename}.json`),
-            JSON.stringify(data)
+            path.join(absolutePath, `${filename}.json`),
+            data
         );
     }
 
-    async read<T>(filename: string): Promise<Option<T>> {
+    async read(filename: string): Promise<Option<string>> {
         try {
+            const absolutePath = path.resolve(process.cwd(), this.basePath);
             const content = await fs.readFile(
-                path.join(this.basePath, `${filename}.json`),
+                path.join(absolutePath, `${filename}.json`),
                 'utf-8'
             );
-            return some(JSON.parse(content) as T);
+            return some(content);
         } catch (error) {
-            if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
-                return none();
-            }
+            if (isFileDoesNotExistError(error)) return none();
             throw error;
         }
     }

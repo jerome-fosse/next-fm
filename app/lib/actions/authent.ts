@@ -1,23 +1,36 @@
 'use server'
 
 import {logger} from "@/app/lib/logger";
-import {lastfm, LastFmGetSessionResponse} from "@/app/lib/http/lastfm";
+import {lastfm} from "@/app/lib/http/lastfm";
+import {getStorage} from "@/app/lib/storage";
+import {Session} from "@/app/types/authent";
+import {isSome} from "@/app/types/option";
 
-export async function createSession(token: string): Promise<LastFmGetSessionResponse | undefined> {
+type SessionResult = { error: false; session: Session } | { error: true; message: string }
+
+export async function createSession(token: string): Promise<SessionResult> {
     logger.debug(`Creating session for ${token}`);
 
-    const api = lastfm.createClientWithDefaultConfig();
+    try {
+        const api = lastfm.createClientWithDefaultConfig();
+        const response = await api.getSession(token);
+        const { name, key, subscriber } = response.data.session;
 
-    api.getSession(token)
-        .then(response => {
-            const data = response.data;
-            logger.debug(`Session created for ${token} with data ${JSON.stringify(data)}`);
+        const storage = getStorage('session');
+        const existing = await storage.read(name);
 
-            return data;
-        })
-        .catch(error => {
-            logger.error(`Error creating session for ${token}:`, error);
-        });
+        const now = new Date().toISOString();
 
-    return undefined
+        const session: Session = isSome(existing)
+            ? { ...JSON.parse(existing.value), key, subscriber }
+            : { user: name, key, subscriber, createdAt: now };
+
+        await storage.write(session.user, JSON.stringify(session));
+
+        return { error: false, session };
+    } catch (e) {
+        const message = `Erreur lors de l'authentification Last.fm${e instanceof Error ? ` : ${e.message}` : ''}`
+        logger.error(message);
+        return { error: true, message: message };
+    }
 }

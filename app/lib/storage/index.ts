@@ -3,8 +3,8 @@ import { Option } from "@/app/types/option";
 import { FsStorage } from "@/app/lib/storage/fs";
 
 export interface Storage {
-    write<T>(filename: string, data: T): Promise<void>;
-    read<T>(filename: string): Promise<Option<T>>;
+    write(filename: string, data: string): Promise<void>;
+    read(filename: string): Promise<Option<string>>;
 }
 
 export function getStorage(name: string): Storage {
