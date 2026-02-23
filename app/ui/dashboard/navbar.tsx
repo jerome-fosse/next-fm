@@ -1,7 +1,6 @@
-import {ImCog} from "react-icons/im";
 import {SlMenu} from "react-icons/sl";
-import {PiWaveform} from "react-icons/pi";
 import Logo from "@/app/ui/common/logo";
+import OptionsMenu from "@/app/ui/dashboard/options-menu";
 
 type Props = {onMenuToggle: () => void};
 
@@ -17,9 +16,7 @@ export default function NavigationBar({onMenuToggle} : Props) {
                 <Logo size="small" />
             </div>
             <div className="flex-none">
-                <button className="btn btn-lg btn-square btn-ghost">
-                    <ImCog />
-                </button>
+                <OptionsMenu />
             </div>
         </div>
     );
