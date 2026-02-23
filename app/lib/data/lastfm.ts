@@ -47,8 +47,8 @@ export async function searchLastfmAlbums(query: string, page: number = 1): Promi
             return result;
         })
         .catch((error) => {
-            logger.error("Error fetching albums from Last.fm:", error);
-            throw new Error("Erreur lors de la recherche sur Last.fm", error);
+            logger.error("searchLastfmAlbums:", error);
+            throw new Error(`Erreur lors de la recherche${error ? ': ' + error.message : '.'}`, error);
         });
 }
 
@@ -59,8 +59,11 @@ export async function fetchLastfmAlbumByIdOrNameAndArtist(id: string = '', title
 
     if (albumsCache.has(key)) {
         const album = albumsCache.get(key);
-        logger.debug(`Album with key ${key} fetched from Last.fm cache.`);
-        return album!;
+        if (album != null) {
+            logger.debug(album)
+            logger.debug(`Album with key ${key} fetched from Last.fm cache.`);
+            return album;
+        }
     }
 
     let params: AlbumInfoParams = {mbid: id, autocorrect: 1};
@@ -75,7 +78,7 @@ export async function fetchLastfmAlbumByIdOrNameAndArtist(id: string = '', title
             return album;
         })
         .catch((error) => {
-            logger.error("Error fetching album from Last.fm:", error);
-            throw new Error("Erreur lors de la récupération de l'album sur Last.fm", error);
+            logger.error("fetchLastfmAlbumByIdOrNameAndArtist:", error);
+            throw new Error(`Erreur lors du chargement de l'album${error ? ': ' + error.message : '.'}`, error);
         });
 }

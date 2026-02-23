@@ -45,7 +45,7 @@ export async function searchDiscogsAlbums(query: string, page: number = 1): Prom
         })
         .catch(error => {
             logger.error("searchAlbumsDiscogs:", error);
-            throw new Error("Erreur lors de la recherche sur Discogs", error);
+            throw new Error(`Erreur lors de la recherche${error ? ': ' + error.message : '.'}`, error);
         });
 }
 
@@ -66,6 +66,6 @@ export async function fetchDiscogsMasterReleaseById(id: number): Promise<Album> 
         })
         .catch(error => {
             logger.error("getMasterDiscogsById:", error);
-            throw new Error(`Erreur lors du chargement des données du master Discogs avec id=${id}`, error);
+            throw new Error(`Erreur lors du chargement de l'album${error ? ': ' + error.message : '.'}`, error);
         });
 }

@@ -56,6 +56,7 @@ export type LastFmAlbum = {
     url: string,
     releasedate: string,
     listeners: string,
+    playcount: string,
     image: LastFmImage[],
     tracks: {
         track: LastFmTrack[],
@@ -66,7 +67,6 @@ export type LastFmAlbum = {
             name: string,
         }[],
     },
-    playcount: string,
 }
 
 export type LastFmTrack = {

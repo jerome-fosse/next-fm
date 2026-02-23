@@ -9,15 +9,6 @@ import {headers} from "next/headers";
 import {redirect} from "next/navigation";
 import config from "@/app/config";
 
-export async function redirectToLastFmAuth() {
-    const headersList = await headers();
-    const host = headersList.get('x-forwarded-host') ?? headersList.get('host') ?? 'localhost:3000';
-    const protocol = headersList.get('x-forwarded-proto') ?? 'http';
-    const callback = `${protocol}://${host}/auth`;
-    const authUrl = `https://www.last.fm/api/auth/?api_key=${config.lastfm.apiKey}&cb=${callback}`;
-    redirect(authUrl);
-}
-
 type SessionResult = { error: false; session: Session } | { error: true; message: string }
 
 export async function createSession(token: string): Promise<SessionResult> {
@@ -34,8 +25,8 @@ export async function createSession(token: string): Promise<SessionResult> {
         const now = new Date().toISOString();
 
         const session: Session = isSome(existing)
-            ? { ...JSON.parse(existing.value), key, subscriber }
-            : { user: name, key, subscriber, createdAt: now };
+            ? { ...JSON.parse(existing.value), key: key, subscriber: subscriber }
+            : { user: name, key: key, subscriber: subscriber, createdAt: now };
 
         await storage.write(session.user, JSON.stringify(session));
 
@@ -45,4 +36,14 @@ export async function createSession(token: string): Promise<SessionResult> {
         logger.error(message);
         return { error: true, message: message };
     }
+}
+
+export async function requestAuthorizationFromLastFM() {
+    const headersList = await headers();
+    const host = headersList.get('x-forwarded-host') ?? headersList.get('host') ?? 'localhost:3000';
+    const protocol = headersList.get('x-forwarded-proto') ?? 'http';
+    const callback = `${protocol}://${host}/auth`;
+    const authUrl = `https://www.last.fm/api/auth/?api_key=${config.lastfm.apiKey}&cb=${callback}`;
+
+    redirect(authUrl);
 }

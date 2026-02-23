@@ -24,6 +24,7 @@ export type Album = {
     tags?: string[],
     released?: string,
     year?: number,
+    duration?: number,
     artists: Artist[],
     tracks: Track[],
     images?: Image[],
@@ -32,7 +33,7 @@ export type Album = {
 export type Track = {
     position: string,
     title: string,
-    duration?: string,
+    duration?: number,
     artists?: Artist[],
 }
 

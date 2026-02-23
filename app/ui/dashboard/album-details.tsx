@@ -3,6 +3,7 @@ import {Album} from "@/app/types/albums";
 import Image from "next/image";
 import {DISCOGS, LASTFM} from "@/app/types/common";
 import {logger} from "@/app/lib/logger";
+import {secondsToDisplayTime} from "@/app/lib/mapper/common";
 
 type Props = {
     className?: string,
@@ -44,9 +45,15 @@ const AlbumDetails = memo(function showAlbumDetails({className, album}: Props) {
                             <div>{album.year}</div>
                         </div>
                     }
+                    {album.duration &&
+                        <div className="flex text-sm my-0.5">
+                            <div className="w-20 font-italic">Durée :</div>
+                            <div>{secondsToDisplayTime(album.duration)}</div>
+                        </div>
+                    }
                     {album.released &&
                         <div className="flex text-sm my-0.5">
-                            <div className="w-20 font-italic">Date de sortie :</div>
+                            <div className="w-20 font-italic">Sortie :</div>
                             <div>{album.released}</div>
                         </div>
                     }
@@ -96,7 +103,7 @@ const AlbumDetails = memo(function showAlbumDetails({className, album}: Props) {
                             <tr key={index}>
                                 <td className="p-1.5">{index + 1}</td>
                                 <td className="p-1.5">{track.title}</td>
-                                <td className="p-1.5" align="right">{track.duration}</td>
+                                <td className="p-1.5" align="right">{track.duration ? secondsToDisplayTime(track.duration) : ''}</td>
                             </tr>
                         ))}
                         </tbody>

@@ -56,11 +56,7 @@ export async function searchAlbumsAction(prevState: SearchAlbumsState, formData:
                 data = await searchLastfmAlbums(parsed.data.query, parsed.data.page);
                 break;
             default:
-                return {
-                    query: parsed.data.query,
-                    searchApi: parsed.data.searchapi,
-                    error: "API de recherche non supportée",
-                }
+                return {query: parsed.data.query, searchApi: parsed.data.searchapi, error: "API de recherche non supportée",}
         }
 
         return {
@@ -74,7 +70,7 @@ export async function searchAlbumsAction(prevState: SearchAlbumsState, formData:
         return {
             query: parsed.data.query,
             searchApi: parsed.data.searchapi,
-            error: error instanceof Error ? `Une erreur s'est produite : ${error.message}` : "Une erreur inattendue s'est produite.",
+            error: error instanceof Error ? error.message : "Une erreur inattendue s'est produite.",
             albums: undefined,
             pagination: undefined
         };
