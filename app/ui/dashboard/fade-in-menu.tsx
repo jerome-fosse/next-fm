@@ -2,6 +2,7 @@ import {PiMicrophoneStage, PiVinylRecord} from "react-icons/pi";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {GrStatusUnknown} from "react-icons/gr";
+import { RxDashboard } from "react-icons/rx";
 
 type Props = {
     className?: string,
@@ -9,6 +10,19 @@ type Props = {
 };
 
 const menuItems = [
+    {
+        type: 'Title',
+        text: 'Dashboard',
+    },
+    {
+        type: 'MenuItem',
+        text: 'Accueil',
+        path: '/dashboard',
+        icon: RxDashboard
+    },
+    {
+        type: 'Divider',
+    },
     {
         type: 'Title',
         text: 'Scrobble',
