@@ -1,6 +1,7 @@
 import {cookies} from 'next/headers';
 import {requestAuthorizationFromLastFM} from '@/app/lib/actions/authent';
 import {PiHeadphones, PiWaveform, PiChartBar, PiShareNetwork} from 'react-icons/pi';
+import Logo from "@/app/ui/common/logo";
 
 const features = [
     { icon: PiHeadphones,   title: 'Écoutez',    description: 'Recherchez vos albums via Discogs ou Last.fm' },
@@ -17,11 +18,7 @@ export default async function Page() {
         return (
             <div className="flex flex-col w-full h-full p-6 gap-8 overflow-y-auto">
                 <div className="flex flex-col items-center gap-2">
-                    <div className="flex items-center gap-1">
-                        <PiWaveform className="w-12 h-12 text-amber-400" />
-                        <span className="font-bold text-5xl">Next<span className="text-amber-400">FM</span></span>
-                    </div>
-                    <p className="text-xl text-base-content/70">Écoutez. Scrobblez. Analysez. Partagez.</p>
+                    <Logo size="large" slogan={true} />
                 </div>
                 <div className="flex flex-col gap-4">
                     <section className="flex flex-col gap-2">
@@ -65,11 +62,7 @@ export default async function Page() {
     return (
         <div className="flex flex-col w-full h-full items-center justify-center gap-12 p-8">
             <div className="flex flex-col items-center gap-2">
-                <div className="flex items-center gap-1">
-                    <PiWaveform className="w-12 h-12 text-amber-400" />
-                    <span className="font-bold text-5xl">Next<span className="text-amber-400">FM</span></span>
-                </div>
-                <p className="text-xl text-base-content/70">Écoutez. Scrobblez. Analysez. Partagez.</p>
+                <Logo size="large" slogan={true} />
             </div>
             <div className="flex gap-6">
                 {features.map(({ icon: Icon, title, description }) => (
