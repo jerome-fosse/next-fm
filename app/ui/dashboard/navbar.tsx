@@ -1,22 +1,23 @@
+'use client'
+
 import {SlMenu} from "react-icons/sl";
 import Logo from "@/app/ui/common/logo";
-import OptionsMenu from "@/app/ui/dashboard/options-menu";
 
-type Props = {onMenuToggle: () => void};
+type Props = { onMenuToggle: () => void; optionsMenu: React.ReactNode };
 
-export default function NavigationBar({onMenuToggle} : Props) {
+export default function NavigationBar({onMenuToggle, optionsMenu}: Props) {
     return (
         <div className="navbar bg-secondary shadow-md rounded-md">
             <div className="flex-none">
                 <button className="btn btn-lg btn-square btn-ghost" onClick={onMenuToggle}>
-                    <SlMenu />
+                    <SlMenu/>
                 </button>
             </div>
             <div className="flex-1 mx-4">
-                <Logo size="small" />
+                <Logo size="small"/>
             </div>
             <div className="flex-none">
-                <OptionsMenu />
+                {optionsMenu}
             </div>
         </div>
     );

@@ -1,3 +1,5 @@
+'use client'
+
 import {useSession} from "@/app/lib/hooks/session";
 import {BiLogInCircle, BiLogOutCircle} from "react-icons/bi";
 import {GrConfigure} from "react-icons/gr";
