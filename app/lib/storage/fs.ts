@@ -19,14 +19,15 @@ export class FsStorage implements Storage {
         );
     }
 
-    async read(filename: string): Promise<Option<string>> {
+    async read<T>(filename: string): Promise<Option<T>> {
         try {
             const absolutePath = path.resolve(process.cwd(), this.basePath);
             const content = await fs.readFile(
                 path.join(absolutePath, `${filename}.json`),
                 'utf-8'
             );
-            return some(content);
+            const parsed = JSON.parse(content) as T;
+            return some(parsed);
         } catch (error) {
             if (isFileDoesNotExistError(error)) return none();
             throw error;

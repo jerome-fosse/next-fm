@@ -1,9 +1,10 @@
-
 import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {
     AlbumInfoParams,
     LastFmAlbumSearchResponse,
-    LastFmGetAlbumInfoResponse, LastFmGetSessionResponse,
+    LastFmGetAlbumInfoResponse,
+    LastFmGetSessionResponse,
+    LastFmUserGetInfoResponse,
     SearchParams
 } from "@/app/lib/http/lastfm/model/types";
 import config from "@/app/config";
@@ -21,6 +22,7 @@ export interface Client {
     search(params: SearchParams): Promise<AxiosResponse<LastFmAlbumSearchResponse>>,
     getAlbumInfo(params: AlbumInfoParams): Promise<AxiosResponse<LastFmGetAlbumInfoResponse>>
     getSession(token: string): Promise<AxiosResponse<LastFmGetSessionResponse>>
+    getUserInfo(user: string): Promise<AxiosResponse<LastFmUserGetInfoResponse>>
 }
 
 class LastFMClient implements Client {
@@ -72,6 +74,17 @@ class LastFMClient implements Client {
                 token: token,
                 api_key: this.cfg.apiKey,
                 api_sig: hash,
+                format: "json",
+            }
+        })
+    }
+
+    public getUserInfo(user: string): Promise<AxiosResponse<LastFmUserGetInfoResponse>> {
+        return this.api.get<LastFmUserGetInfoResponse>("/2.0/", {
+            params: {
+                method: "user.getInfo",
+                user: user,
+                api_key: this.cfg.apiKey,
                 format: "json",
             }
         })

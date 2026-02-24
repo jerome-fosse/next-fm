@@ -109,3 +109,29 @@ export type LastFmGetSessionResponse = {
     }
 }
 
+export type LastFmUserGetInfoResponse = {
+    user: LastFmUser
+}
+
+export type LastFmUser = {
+    name: string,
+    age: string,
+    subscriber: string,
+    realname: string,
+    bootstrap: string,
+    playcount: string,
+    artist_count: string,
+    playlists: string,
+    track_count: string,
+    album_count: string,
+    image: LastFmImage[],
+    registered: {
+        unixtime: string,
+        "#text": string,
+    },
+    country: string,
+    gender: string,
+    url: string,
+    type: string,
+}
+

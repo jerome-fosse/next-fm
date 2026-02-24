@@ -1,38 +1,34 @@
 'use server'
 
 import {logger} from "@/app/lib/logger";
-import {lastfm} from "@/app/lib/http/lastfm";
-import {getStorage} from "@/app/lib/storage";
-import {Session} from "@/app/types/authent";
-import {isSome} from "@/app/types/option";
+import {Session, User} from "@/app/types/authent";
 import {headers} from "next/headers";
 import {redirect} from "next/navigation";
 import config from "@/app/config";
+import {getOrCreateSession, getUserInfos} from "@/app/lib/data/authent";
 
 type SessionResult = { error: false; session: Session } | { error: true; message: string }
+type UserInfosResult = { error: false; user: User } | { error: true; message: string }
 
-export async function createSession(token: string): Promise<SessionResult> {
+export async function createSessionAction(token: string): Promise<SessionResult> {
     logger.debug(`Creating session for ${token}`);
 
     try {
-        const api = lastfm.createClientWithDefaultConfig();
-        const response = await api.getSession(token);
-        const { name, key, subscriber } = response.data.session;
-
-        const storage = getStorage('session');
-        const existing = await storage.read(name);
-
-        const now = new Date().toISOString();
-
-        const session: Session = isSome(existing)
-            ? { ...JSON.parse(existing.value), key: key, subscriber: subscriber }
-            : { user: name, key: key, subscriber: subscriber, createdAt: now };
-
-        await storage.write(session.user, JSON.stringify(session));
-
-        return { error: false, session };
+        return {error: false, session: await getOrCreateSession(token)};
     } catch (e) {
         const message = `Erreur lors de l'authentification Last.fm${e instanceof Error ? ` : ${e.message}` : ''}`
+        logger.error(message);
+        return { error: true, message: message };
+    }
+}
+
+export async function getUserInfosAction(user: string): Promise<UserInfosResult> {
+    logger.debug(`Getting user infos for ${user}`);
+
+    try {
+        return {error: false, user: await getUserInfos(user)};
+    } catch (e) {
+        const message = `Erreur lors du chargement des données de l'utilisateur ${user}${e instanceof Error ? ` : ${e.message}` : ''}`
         logger.error(message);
         return { error: true, message: message };
     }

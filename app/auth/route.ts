@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {createSession} from '@/app/lib/actions/authent';
+import {createSessionAction} from '@/app/lib/actions/authent';
 
 export async function GET(request: NextRequest) {
     const token = request.nextUrl.searchParams.get('token');
@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
         return new NextResponse('Authentication failed - No token', { status: 400 });
     }
 
-    const result = await createSession(token);
+    const result = await createSessionAction(token);
 
     if (result.error) {
         return new NextResponse(result.message, { status: 500 });

@@ -4,7 +4,7 @@ import { FsStorage } from "@/app/lib/storage/fs";
 
 export interface Storage {
     write(filename: string, data: string): Promise<void>;
-    read(filename: string): Promise<Option<string>>;
+    read<T>(filename: string): Promise<Option<T>>;
 }
 
 export function getStorage(name: string): Storage {
