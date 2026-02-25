@@ -1,4 +1,4 @@
-import {logger} from "@/app/lib/logger";
+import {logger} from "@/app/lib/utils/logger";
 import config from "@/app/config";
 
 export function register() {

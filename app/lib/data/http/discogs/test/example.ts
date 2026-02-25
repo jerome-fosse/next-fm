@@ -1,4 +1,4 @@
-import {discogs} from "@/app/lib/http/discogs/test";
+import {discogs} from "@/app/lib/data/http/discogs/test";
 
 const discogsClient = discogs.createClientWithDefaultConfig();
 

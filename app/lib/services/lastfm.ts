@@ -1,9 +1,9 @@
 'use server'
 
-import {AlbumInfoParams, lastfm} from "@/app/lib/http/lastfm";
+import {AlbumInfoParams, lastfm} from "@/app/lib/data/http/lastfm";
 import {Album, SearchAlbumsResult} from "@/app/types/albums";
-import {lastfmAlbumToAlbum, lastfmSearchResultItemToAlbumShort} from "@/app/lib/mapper/album";
-import {logger} from "@/app/lib/logger";
+import {lastfmAlbumToAlbum, lastfmSearchResultItemToAlbumShort} from "@/app/lib/services/mapper/album";
+import {logger} from "@/app/lib/utils/logger";
 import config from "@/app/config";
 import {LRUCache} from "lru-cache";
 

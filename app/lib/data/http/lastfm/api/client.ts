@@ -6,7 +6,7 @@ import {
     LastFmGetSessionResponse,
     LastFmUserGetInfoResponse,
     SearchParams
-} from "@/app/lib/http/lastfm/model/types";
+} from "@/app/lib/data/http/lastfm/model/types";
 import config from "@/app/config";
 import crypto from "crypto";
 

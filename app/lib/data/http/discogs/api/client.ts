@@ -1,7 +1,7 @@
-import {DiscogsMaster, DiscogsRelease, DiscogsSearchParams, DiscogsSearchResponse} from "@/app/lib/http/discogs/model/types";
+import {DiscogsMaster, DiscogsRelease, DiscogsSearchParams, DiscogsSearchResponse} from "@/app/lib/data/http/discogs/model/types";
 import axios, {AxiosInstance, AxiosResponse} from "axios";
 import config from "@/app/config";
-import {logger} from "@/app/lib/logger";
+import {logger} from "@/app/lib/utils/logger";
 
 export type DiscogsConfiguration = {
     token: string,

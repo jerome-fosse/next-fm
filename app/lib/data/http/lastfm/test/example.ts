@@ -1,4 +1,4 @@
-import {lastfm} from "@/app/lib/http/lastfm/test/";
+import {lastfm} from "@/app/lib/data/http/lastfm/test/";
 
 const client = lastfm.createClientWithDefaultConfig();
 

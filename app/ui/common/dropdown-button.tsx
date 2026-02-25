@@ -4,7 +4,7 @@
 import {IconType} from "react-icons";
 import {BiSolidDownArrow} from "react-icons/bi";
 import {useState} from "react";
-import {logger} from "@/app/lib/logger";
+import {logger} from "@/app/lib/utils/logger";
 
 type Props = {
     name?: string,

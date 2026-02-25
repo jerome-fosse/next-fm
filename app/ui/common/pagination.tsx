@@ -1,7 +1,7 @@
 'use client'
 
 import {memo, useState} from "react";
-import {logger} from "@/app/lib/logger";
+import {logger} from "@/app/lib/utils/logger";
 
 type Props = {
     pages: number,

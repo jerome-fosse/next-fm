@@ -2,8 +2,8 @@ import {memo} from "react";
 import {Album} from "@/app/types/albums";
 import Image from "next/image";
 import {DISCOGS, LASTFM} from "@/app/types/common";
-import {logger} from "@/app/lib/logger";
-import {secondsToDisplayTime} from "@/app/lib/mapper/common";
+import {logger} from "@/app/lib/utils/logger";
+import {secondsToDisplayTime} from "@/app/lib/utils/duration";
 
 type Props = {
     className?: string,

@@ -1,4 +1,4 @@
-import {logger} from "@/app/lib/logger";
+import {logger} from "@/app/lib/utils/logger";
 import {z} from "zod";
 
 const envSchema = z.object({

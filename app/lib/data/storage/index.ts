@@ -1,6 +1,6 @@
 import config from "@/app/config";
 import { Option } from "@/app/types/option";
-import { FsStorage } from "@/app/lib/storage/fs";
+import { FsStorage } from "@/app/lib/data/storage/fs";
 
 export interface Storage {
     write(filename: string, data: string): Promise<void>;

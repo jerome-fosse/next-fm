@@ -1,6 +1,6 @@
 'use client'
 
-import {useSession} from "@/app/lib/hooks/session";
+import {useSession} from "@/app/lib/utils/hooks/session";
 import {BiLogInCircle, BiLogOutCircle} from "react-icons/bi";
 import {GrConfigure} from "react-icons/gr";
 import {requestAuthorizationFromLastFM} from "@/app/lib/actions/authent";

@@ -1,7 +1,7 @@
-import {DiscogsMaster, DiscogsSearchResultItem} from "@/app/lib/http/discogs";
+import {DiscogsMaster, DiscogsSearchResultItem} from "@/app/lib/data/http/discogs";
 import {Album, AlbumShort} from "@/app/types/albums";
-import {LastFmAlbum, LastFmAlbumInfos} from "@/app/lib/http/lastfm";
-import {displayTimeToSeconds} from "@/app/lib/mapper/common";
+import {LastFmAlbum, LastFmAlbumInfos} from "@/app/lib/data/http/lastfm";
+import {displayTimeToSeconds} from "@/app/lib/utils/duration";
 
 export function discogsSearchResultItemToAlbumShort(item: DiscogsSearchResultItem): AlbumShort {
     const [artistName, albumTitle] = item.title.split(' - ')

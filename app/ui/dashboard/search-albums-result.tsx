@@ -2,7 +2,7 @@ import AlbumThumbnail from "@/app/ui/dashboard/album-thumb";
 import {DISCOGS, LASTFM, Pagination} from "@/app/types/common";
 import {Album, AlbumShort} from "@/app/types/albums";
 import PaginationControl from "@/app/ui/common/pagination";
-import {logger} from "@/app/lib/logger";
+import {logger} from "@/app/lib/utils/logger";
 import {memo, useRef, useState, useTransition} from "react";
 import AlbumDetails from "@/app/ui/dashboard/album-details";
 import {fetchAlbumAction} from "@/app/lib/actions/album";

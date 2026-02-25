@@ -1,10 +1,10 @@
 'use server'
 
-import {lastfm} from "@/app/lib/http/lastfm";
+import {lastfm} from "@/app/lib/data/http/lastfm";
 import {Session, User} from "@/app/types/authent";
-import {lastFmUserToUser} from "@/app/lib/mapper/authent";
-import {logger} from "@/app/lib/logger";
-import {getStorage} from "@/app/lib/storage";
+import {lastFmUserToUser} from "@/app/lib/services/mapper/authent";
+import {logger} from "@/app/lib/utils/logger";
+import {getStorage} from "@/app/lib/data/storage";
 import {isSome} from "@/app/types/option";
 
 const api = lastfm.createClientWithDefaultConfig();

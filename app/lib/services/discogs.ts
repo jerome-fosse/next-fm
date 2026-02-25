@@ -1,10 +1,10 @@
 'use server'
 
-import {discogs} from "@/app/lib/http/discogs/api/client";
+import {discogs} from "@/app/lib/data/http/discogs/";
 import {Album, SearchAlbumsResult} from "@/app/types/albums";
-import {discogsMasterToAlbum, discogsSearchResultItemToAlbumShort} from "@/app/lib/mapper/album";
-import {discogsPaginationToPagination} from "@/app/lib/mapper/common";
-import {logger} from "@/app/lib/logger";
+import {discogsMasterToAlbum, discogsSearchResultItemToAlbumShort} from "@/app/lib/services/mapper/album";
+import {discogsPaginationToPagination} from "@/app/lib/services/mapper/common";
+import {logger} from "@/app/lib/utils/logger";
 import config from "@/app/config";
 import {LRUCache} from "lru-cache";
 

@@ -1,11 +1,11 @@
 'use server'
 
-import {logger} from "@/app/lib/logger";
+import {logger} from "@/app/lib/utils/logger";
 import {Session, User} from "@/app/types/authent";
 import {headers} from "next/headers";
 import {redirect} from "next/navigation";
 import config from "@/app/config";
-import {getOrCreateSession, getUserInfos} from "@/app/lib/data/authent";
+import {getOrCreateSession, getUserInfos} from "@/app/lib/services/authent";
 
 type SessionResult = { error: false; session: Session } | { error: true; message: string }
 type UserInfosResult = { error: false; user: User } | { error: true; message: string }

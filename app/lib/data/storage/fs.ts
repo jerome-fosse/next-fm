@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { Storage } from '@/app/lib/storage';
+import { Storage } from '@/app/lib/data/storage';
 import { Option, some, none } from '@/app/types/option';
 
 function isFileDoesNotExistError(error: unknown): error is NodeJS.ErrnoException {

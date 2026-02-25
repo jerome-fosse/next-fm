@@ -1,5 +1,5 @@
 import {User} from "@/app/types/authent";
-import {LastFmUser} from "@/app/lib/http/lastfm";
+import {LastFmUser} from "@/app/lib/data/http/lastfm";
 
 export function lastFmUserToUser(lastFmUser: LastFmUser): User {
     return {

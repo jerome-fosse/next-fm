@@ -1,10 +1,10 @@
 'use server'
 
-import {fetchDiscogsMasterReleaseById, searchDiscogsAlbums} from "@/app/lib/data/discogs";
+import {fetchDiscogsMasterReleaseById, searchDiscogsAlbums} from "@/app/lib/services/discogs";
 import {Album, AlbumShort, SearchAlbumsResult} from "@/app/types/albums";
 import {DISCOGS, LASTFM, Origin, ORIGINS, Pagination} from "@/app/types/common";
-import {fetchLastfmAlbumByIdOrNameAndArtist, searchLastfmAlbums} from "@/app/lib/data/lastfm";
-import {logger} from "@/app/lib/logger";
+import {fetchLastfmAlbumByIdOrNameAndArtist, searchLastfmAlbums} from "@/app/lib/services/lastfm";
+import {logger} from "@/app/lib/utils/logger";
 import {z} from "zod";
 import {zfd} from "zod-form-data";
 
