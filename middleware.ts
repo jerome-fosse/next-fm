@@ -1,9 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {z} from 'zod';
-
-const sessionCookieSchema = z.object({
-    username: z.string().min(1),
-});
+import {sessionCookieSchema} from "@/app/schemas/authent";
 
 function validateCookie(request: NextRequest): boolean {
     const raw = request.cookies.get('nextfm-session')?.value;

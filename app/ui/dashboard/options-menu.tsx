@@ -1,13 +1,16 @@
-'use client'
-
-import {useSession} from "@/app/lib/utils/hooks/session";
 import {BiLogInCircle, BiLogOutCircle} from "react-icons/bi";
 import {GrConfigure} from "react-icons/gr";
 import {requestAuthorizationFromLastFM} from "@/app/lib/actions/authent";
 import Image from "next/image";
+import {cookies} from "next/headers";
+import {sessionCookieSchema} from "@/app/schemas/authent";
 
-export default function OptionsMenu() {
-    const {connected, username} = useSession();
+export default async function OptionsMenu() {
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('nextfm-session');
+    const parsed = sessionCookieSchema.safeParse(JSON.parse(sessionCookie?.value ?? '{}'));
+    const connected = parsed.success;
+    const username = parsed.success ? parsed.data.username : undefined;
 
     return (
         <div className="flex space-x-2 items-center justify-end">
