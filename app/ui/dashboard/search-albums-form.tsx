@@ -1,5 +1,3 @@
-'use client';
-
 import SearchInput from "@/app/ui/common/search-input";
 import DropDownButton from "@/app/ui/common/dropdown-button";
 import {SiDiscogs} from "react-icons/si";

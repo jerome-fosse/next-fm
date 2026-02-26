@@ -8,6 +8,7 @@ import AlbumDetails from "@/app/ui/dashboard/album-details";
 import {fetchAlbumAction} from "@/app/lib/actions/album";
 import AlertDialog from "@/app/ui/common/alert-dialog";
 import {SlOptions} from "react-icons/sl";
+import {match, P} from "ts-pattern";
 
 export type Props = {
     className?: string,
@@ -41,33 +42,32 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
 
     const handleShowAlbum = (album: AlbumShort) => {
         startTransition(async () => {
-            let data = undefined
-
-            switch (album.origin) {
-                case DISCOGS:
-                    data = await fetchAlbumAction({id: album.id, origin: album.origin});
-                    break;
-                case LASTFM:
-                    data = await fetchAlbumAction({id: album.id, title: album.title, artist: album.artist.name, origin: album.origin});
-                    break;
-                default:
-                    throw new Error(`Unknown album origin: ${origin}`);
-            }
-
-            if (data.error) {
-                setError(data.error);
+            const showError = (error: string) => {
+                setError(error);
                 setAlbum(undefined);
                 errorModal.current?.showModal();
-            } else {
-                setAlbum(data.album);
+            }
+
+            const showAlbum = (album: Album) => {
+                setAlbum(album);
                 setError(undefined);
                 albumModal.current?.showModal();
             }
+
+            const data = await match(album.origin)
+                .with(DISCOGS, () => fetchAlbumAction({id: album.id, origin: album.origin}))
+                .with(LASTFM, () => fetchAlbumAction({id: album.id, title: album.title, artist: album.artist.name, origin: album.origin}))
+                .exhaustive();
+
+            match(data)
+                .with({error: P.string}, (result) => showError(result.error))
+                .with({error: P.optional(undefined)}, (result) => showAlbum(result.album))
+                .exhaustive();
         })
     }
 
     const [allImagesLoaded, setAllImagesLoaded] = useState(false);
-    const imagesLoaded = useRef(0);
+    const imagesLoaded = useRef(0)
     const handleImageLoad = () => {
         imagesLoaded.current++;
 
