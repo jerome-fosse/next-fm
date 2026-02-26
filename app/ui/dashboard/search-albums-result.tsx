@@ -67,7 +67,15 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
     }
 
     const [allImagesLoaded, setAllImagesLoaded] = useState(false);
-    const imagesLoaded = useRef(0)
+    const imagesLoaded = useRef(0);
+    const albumsRef = useRef(albums);
+
+    if (albumsRef.current !== albums) {
+        albumsRef.current = albums;
+        setAllImagesLoaded(false);
+        imagesLoaded.current = 0;
+    }
+
     const handleImageLoad = () => {
         imagesLoaded.current++;
 
