@@ -24,6 +24,8 @@ const envSchema = z.object({
     CACHE_LASTFM_ALBUMS_TTL: z.coerce.number().int().min(1).default(600000), // 10 minutes
     CACHE_LASTFM_SEARCH_CAPACITY: z.coerce.number().int().min(1).default(100),
     CACHE_LASTFM_SEARCH_TTL: z.coerce.number().int().min(1).default(600000), // 10 minutes
+    CACHE_LASTFM_USERINFOS_CAPACITY: z.coerce.number().int().min(1).default(100),
+    CACHE_LASTFM_USERINFOS_TTL: z.coerce.number().int().min(1).default(600000), // 10 minutes
 
     // Application
     USER_AGENT: z.string().default('Next.fm/0.1.0 (https://github.com/jerome-fosse/next-fm)'),
@@ -74,7 +76,7 @@ const config = {
         searchPageSize: parsed.data.LASTFM_SEARCH_PAGE_SIZE,
     },
     storage: storageMap,
-    cache:{
+    cache: {
         discogs: {
             albums: {
                 capacity: parsed.data.CACHE_DISCOGS_ALBUMS_CAPACITY,
@@ -86,6 +88,10 @@ const config = {
             },
         },
         lastfm: {
+            userinfos : {
+                capacity: parsed.data.CACHE_LASTFM_USERINFOS_CAPACITY,
+                ttl: parsed.data.CACHE_LASTFM_USERINFOS_TTL,
+            },
             albums: {
                 capacity: parsed.data.CACHE_LASTFM_ALBUMS_CAPACITY,
                 ttl: parsed.data.CACHE_LASTFM_ALBUMS_TTL,

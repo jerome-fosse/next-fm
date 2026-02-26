@@ -8,8 +8,16 @@ import {getStorage} from "@/app/lib/data/storage";
 import {isSome, none, Option, some} from "fp-ts/Option";
 import {cookies} from "next/headers";
 import {sessionCookieSchema} from "@/app/schemas/authent";
+import config from "@/app/config";
+import {LRUCache} from "lru-cache";
 
 const api = lastfm.createClientWithDefaultConfig();
+
+const userInfosCache =  new LRUCache<string, User>({
+    max: config.cache.lastfm.userinfos.capacity,
+    ttl: config.cache.lastfm.userinfos.ttl,
+    onInsert: (value, key) => logger.debug( `UserInfos for ${key} inserted in cache.`),
+});
 
 export async function getOrCreateSession(token: string): Promise<Session> {
     logger.info(`getOrCreateSession for ${token}`);
@@ -33,10 +41,20 @@ export async function getOrCreateSession(token: string): Promise<Session> {
 
 
 export async function getUserInfos(user: string): Promise<User> {
-    logger.info(`getOrCreateSession for user ${user}`);
+    logger.info(`getUserInfos for user ${user}`);
+
+    if (userInfosCache.has(user)) {
+        const userInfos = userInfosCache.get(user);
+        logger.debug(`UserInfos for ${user} fetched from cache.`);
+        return userInfos!;
+    }
 
     return api.getUserInfo(user)
-        .then(response => lastFmUserToUser(response.data.user))
+        .then(response => {
+            const user = lastFmUserToUser(response.data.user)
+            userInfosCache.set(user.name, user);
+            return user;
+        })
         .catch(error => {
             throw new Error(`Erreur lors du chargement des données de l'utilisateur ${user} : ${error.message}`)
         });
