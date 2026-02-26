@@ -5,9 +5,11 @@ import Image from "next/image";
 import {getConnectedUserInfos} from "@/app/lib/services/authent";
 import {option} from "fp-ts";
 import {pipe} from "fp-ts/function";
+import { GrLastfm } from "react-icons/gr";
+
 
 export default async function OptionsMenu() {
-    const {connected, username, profileImage} = pipe(
+    const {connected, username, profileImage, url} = pipe(
         await getConnectedUserInfos(),
         option.map(user => ({
             connected: true,
@@ -20,7 +22,7 @@ export default async function OptionsMenu() {
 
     return (
         <div className="flex space-x-2 items-center justify-end">
-            {connected && <span className="text-sm font-bold">{username}</span>}
+            {connected && <span className="text-sm font-bold text-secondary-content">{username}</span>}
             <details className="dropdown dropdown-end">
                 <summary className="btn btn-square btn-ghost w-10 h-10 border-none hover:bg-transparent focus:bg-transparent active:bg-transparent">
                     <Image className="rounded-full"
@@ -30,7 +32,9 @@ export default async function OptionsMenu() {
                 <form id="options-form">
                     <ul tabIndex={-1} className="menu dropdown-content bg-base-100 rounded-box z-10 w-52 p-2 shadow-sm">
                         {!connected && <li><button form="options-form" formAction={requestAuthorizationFromLastFM}><BiLogInCircle />Connection</button></li>}
+                        {connected && <li><a href={url} target="_blank"><GrLastfm />Profil Last.fm</a></li>}
                         {connected && <li><button><GrConfigure />Paramètres</button></li>}
+                        {connected && <li className="ui-menu-divider"></li>}
                         {connected && <li><button><BiLogOutCircle />Déconnection</button></li>}
                     </ul>
                 </form>
