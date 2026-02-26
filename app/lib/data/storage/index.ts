@@ -1,5 +1,5 @@
 import config from "@/app/config";
-import { Option } from "@/app/types/option";
+import { Option } from "fp-ts/Option";
 import { FsStorage } from "@/app/lib/data/storage/fs";
 
 export interface Storage {

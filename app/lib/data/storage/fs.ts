@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { Storage } from '@/app/lib/data/storage';
-import { Option, some, none } from '@/app/types/option';
+import { Option, some, none } from 'fp-ts/Option';
 
 function isFileDoesNotExistError(error: unknown): error is NodeJS.ErrnoException {
     return error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT';
@@ -29,7 +29,7 @@ export class FsStorage implements Storage {
             const parsed = JSON.parse(content) as T;
             return some(parsed);
         } catch (error) {
-            if (isFileDoesNotExistError(error)) return none();
+            if (isFileDoesNotExistError(error)) return none;
             throw error;
         }
     }
