@@ -1,7 +1,12 @@
-import {DiscogsMaster, DiscogsRelease, DiscogsSearchParams, DiscogsSearchResponse} from "@/app/lib/data/http/discogs/model/types";
+import {
+    DiscogsMaster,
+    DiscogsRelease,
+    DiscogsSearchParams,
+    DiscogsSearchResponse
+} from "@/app/lib/data/http/discogs/model/types";
 import axios, {AxiosInstance, AxiosResponse} from "axios";
-import config from "@/app/config";
 import {logger} from "@/app/lib/utils/logger";
+import {match} from "ts-pattern";
 
 export type DiscogsConfiguration = {
     token: string,
@@ -36,62 +41,40 @@ export class DiscogsClient implements Client {
     }
 
     public async search(params: DiscogsSearchParams): Promise<AxiosResponse<DiscogsSearchResponse>> {
-         return this.apiClient
-            .get<DiscogsSearchResponse>("/database/search", {
-                    params: params,
-                }
-            );
+        return this.apiClient
+            .get<DiscogsSearchResponse>("/database/search", { params })
+            .catch((error) => {
+                logger.error("Discogs: Error searching: ", `params=${JSON.stringify(params)}`, `error=${error}`);
+                throw new Error(`Unexpected error when searching`);
+            });
     }
 
     public async masterReleaseById(id: number): Promise<AxiosResponse<DiscogsMaster>> {
         logger.debug("Discogs: Fetching master by id: ", "id=", id);
-        return this.apiClient.get<DiscogsMaster>(`/masters/${id}`);
+        return this.apiClient.get<DiscogsMaster>(`/masters/${id}`)
+            .catch((error) => {
+                logger.error("Discogs: Error fetching master: ", `id=${id}`, `error=${error}`);
+                return match(error)
+                    .when(() => (axios.isAxiosError(error) && error.response?.status === 404), () => {
+                        throw new Error(`Master with id ${id} not found`)
+                    })
+                    .otherwise(() => {
+                        throw new Error(`Unexpected error when fetching master with id ${id}`)
+                    });
+            });
     }
 
     public async releaseById(id: number): Promise<AxiosResponse<DiscogsRelease>> {
-        return this.apiClient.get<DiscogsRelease>(`/releases/${id}`);
+        return this.apiClient.get<DiscogsRelease>(`/releases/${id}`)
+            .catch((error) => {
+                logger.error("Discogs: Error fetching release: ", `id=${id}`, `error=${error}`);
+                return match(error)
+                    .when(() => axios.isAxiosError(error) && error.response?.status === 404, () => {
+                        throw new Error(`Release with id ${id} not found`)
+                    })
+                    .otherwise(() => {
+                        throw new Error(`Unexpected error when fetching release with id ${id}`)
+                    });
+            });
     }
 }
-
-class Discogs {
-    constructor() {
-    }
-    public createClient(config: DiscogsConfiguration) : Client {
-        this.checkConfig(config)
-        return new DiscogsClient(config)
-    }
-    public createClientWithDefaultConfig() : Client {
-        const config = this.defaultConfig()
-        this.checkConfig(config)
-
-        return new DiscogsClient(config)
-    }
-    public defaultConfig(): DiscogsConfiguration {
-        return {
-            token: config.discogs.token,
-            baseUrl: config.discogs.baseUrl,
-            timeout: config.discogs.timeout,
-            userAgent: config.userAgent
-        }
-    }
-
-    private checkConfig(config: DiscogsConfiguration) {
-        if (config.token === "") {
-            throw new Error("Missing DISCOGS_TOKEN in index...")
-        }
-
-        if (config.baseUrl === "") {
-            throw new Error("Missing DISCOGS_BASE_URL in index...")
-        }
-
-        if (config.timeout === null) {
-            throw new Error("Missing DISCOGS_TIMEOUT in index...")
-        }
-
-        if (config.userAgent === "") {
-            throw new Error("Missing USER_AGENT in index...")
-        }
-    }
-}
-
-export const discogs = new Discogs();

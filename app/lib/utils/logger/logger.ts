@@ -8,9 +8,11 @@ export interface Logger {
 }
 
 const isServer = typeof window === 'undefined';
+const isTest = process.env.NODE_ENV === 'test';
 
 class ConsoleLogger implements Logger {
     debug(...args: unknown[]): void {
+        if (isTest) return;
         if (process.env.NODE_ENV === 'development') {
             if (isServer) {
                 console.log(pc.blue(pc.bold('[DEBUG]')), ...args);
@@ -21,6 +23,7 @@ class ConsoleLogger implements Logger {
     }
 
     info(...args: unknown[]): void {
+        if (isTest) return;
         if (isServer) {
             console.log(pc.green(pc.bold('[INFO]')), ...args);
         } else {
@@ -29,6 +32,7 @@ class ConsoleLogger implements Logger {
     }
 
     warn(...args: unknown[]): void {
+        if (isTest) return;
         if (isServer) {
             console.log(pc.yellow(pc.bold('[WARN]')), ...args);
         } else {
@@ -37,6 +41,7 @@ class ConsoleLogger implements Logger {
     }
 
     error(...args: unknown[]): void {
+        if (isTest) return;
         if (isServer) {
             console.error(pc.red(pc.bold('[ERROR]')), ...args);
         } else {
