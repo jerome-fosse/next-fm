@@ -2,13 +2,15 @@ import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {
     AlbumInfoParams,
     LastFmAlbumSearchResponse,
+    LastFmErrorResponse,
     LastFmGetAlbumInfoResponse,
     LastFmGetSessionResponse,
     LastFmUserGetInfoResponse,
     SearchParams
 } from "@/app/lib/data/http/lastfm/model/types";
-import config from "@/app/config";
 import crypto from "crypto";
+import {match} from "ts-pattern";
+import {logger} from "@/app/lib/utils/logger";
 
 export type LastfmConfiguration = {
     apiKey: string,
@@ -50,7 +52,22 @@ export class LastFMClient implements Client {
                 format: "json",
                 ...params,
             },
-        });
+        })
+        .then((response) => response)
+        .catch((error) => {
+            return match(error)
+                .when(
+                    (e) => axios.isAxiosError(e) && e.response?.data.message,
+                    (e) => {
+                        logger.error("LastFM: search", e.response!.data)
+                        throw new Error(e.response!.data.message)
+                    }
+                )
+                .otherwise(() => {
+                    logger.error("LastFM: search", "Unexpected error when fetching search results", error)
+                    throw new Error("Unexpected error when fetching search results")
+                })
+        })
     }
 
     public getAlbumInfo(params: AlbumInfoParams): Promise<AxiosResponse<LastFmGetAlbumInfoResponse>> {
@@ -61,6 +78,21 @@ export class LastFMClient implements Client {
                 format: "json",
                 ...params,
             }
+        })
+        .then((response) => response)
+        .catch((error) => {
+            return match(error)
+                .when(
+                    (e) => axios.isAxiosError(e) && e.response?.data.message,
+                    (e) => {
+                        logger.error("LastFM: getAlbumInfo", e.response!.data)
+                        throw new Error(e.response!.data.message)
+                    }
+                )
+                .otherwise(() => {
+                    logger.error("LastFM: getAlbumInfo", error)
+                    throw new Error("Unexpected error when fetching album info")
+                })
         })
     }
 
@@ -77,6 +109,21 @@ export class LastFMClient implements Client {
                 format: "json",
             }
         })
+        .then((response) => response)
+        .catch((error) => {
+            return match(error)
+                .when(
+                    (e) => axios.isAxiosError(e) && e.response?.data.message,
+                    (e) => {
+                        logger.error("LastFM: getSession", e.response!.data)
+                        throw new Error(e.response!.data.message)
+                    }
+                )
+                .otherwise(() => {
+                    logger.error("LastFM: getSession", "Unexpected error when fetching session", error)
+                    throw new Error("Unexpected error when fetching session")
+                })
+        })
     }
 
     public getUserInfo(user: string): Promise<AxiosResponse<LastFmUserGetInfoResponse>> {
@@ -87,6 +134,21 @@ export class LastFMClient implements Client {
                 api_key: this.cfg.apiKey,
                 format: "json",
             }
+        })
+        .then((response) => response)
+        .catch((error) => {
+            return match(error)
+                .when(
+                    (e) => axios.isAxiosError(e) && e.response?.data.message,
+                    (e) => {
+                        logger.error("LastFM: getUserInfo", e.response!.data)
+                        throw new Error(e.response!.data.message)
+                    }
+                )
+                .otherwise(() => {
+                    logger.error("LastFM: getUserInfo", "Unexpected error when fetching user info", error)
+                    throw new Error("Unexpected error when fetching user info")
+                })
         })
     }
 }

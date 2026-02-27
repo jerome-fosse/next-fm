@@ -1,3 +1,8 @@
+export type LastFmErrorResponse = {
+    error: number,
+    message: string,
+}
+
 export type SearchParams = {
     // The album name
     album: string,

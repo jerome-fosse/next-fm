@@ -10,5 +10,11 @@ export default defineConfig({
   test: {
     environment: 'node',
     reporters: ['tree'],
+    coverage: {
+      provider: 'istanbul',
+      reporter: ['text', 'html'],
+      include: ['app/**'],
+      exclude: ['**/*.test.ts'],
+    }
   }
 })
