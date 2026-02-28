@@ -60,7 +60,6 @@ export async function fetchLastfmAlbumByIdOrNameAndArtist(id: string = '', title
     if (albumsCache.has(key)) {
         const album = albumsCache.get(key);
         if (album != null) {
-            logger.debug(album)
             logger.debug(`Album with key ${key} fetched from Last.fm cache.`);
             return album;
         }
