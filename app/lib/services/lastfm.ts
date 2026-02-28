@@ -33,12 +33,12 @@ export async function searchLastfmAlbums(query: string, page: number = 1): Promi
 
     return api.search({album: query, page: page, limit: searchAlbumsPageSize})
         .then(response => {
-            const albums = response.data.results.albummatches.album.map((album) => lastfmSearchResultItemToAlbumShort(album))
+            const albums = response.results.albummatches.album.map((album) => lastfmSearchResultItemToAlbumShort(album))
             const pagination = {
                 page: page,
-                pages: Math.ceil(parseInt(response.data.results["opensearch:totalResults"], 10) / searchAlbumsPageSize),
-                size: parseInt(response.data.results["opensearch:itemsPerPage"], 10),
-                total: parseInt(response.data.results["opensearch:totalResults"], 10),
+                pages: Math.ceil(parseInt(response.results["opensearch:totalResults"], 10) / searchAlbumsPageSize),
+                size: parseInt(response.results["opensearch:itemsPerPage"], 10),
+                total: parseInt(response.results["opensearch:totalResults"], 10),
                 urls: {},
             }
 
@@ -73,7 +73,7 @@ export async function fetchLastfmAlbumByIdOrNameAndArtist(id: string = '', title
 
     return api.getAlbumInfo(params)
         .then(response => {
-            const album = lastfmAlbumToAlbum(response.data.album);
+            const album = lastfmAlbumToAlbum(response.album);
             albumsCache.set(key, album);
             return album;
         })

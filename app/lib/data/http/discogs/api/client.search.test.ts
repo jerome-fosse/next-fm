@@ -29,7 +29,7 @@ describe("DiscogsClient - search", () => {
         const response = await client.search({ query: "Nirvana" });
 
         expect(mockGet).toHaveBeenCalledWith("/database/search", { params: { query: "Nirvana" } });
-        expect(response.status).toBe(200);
+        expect(response.results).toEqual([]);
     });
 
     it("should throw a generic error on failure", async () => {

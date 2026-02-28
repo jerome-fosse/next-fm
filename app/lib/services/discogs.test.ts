@@ -17,7 +17,7 @@ describe("Discogs Service", () => {
     });
 
     it("should fetch a Album by it's id", async () => {
-        masterReleaseById.mockResolvedValue({ data: Masters.BlackSabbath, status: 200 });
+        masterReleaseById.mockResolvedValue(Masters.BlackSabbath);
         const album = await fetchDiscogsMasterReleaseById(1234);
 
         expect(masterReleaseById).toHaveBeenCalledWith(1234);

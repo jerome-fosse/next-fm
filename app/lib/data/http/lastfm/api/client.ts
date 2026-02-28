@@ -1,4 +1,4 @@
-import axios, {AxiosInstance, AxiosResponse} from "axios";
+import axios, {AxiosInstance} from "axios";
 import {
     AlbumInfoParams,
     LastFmAlbumSearchResponse,
@@ -21,10 +21,10 @@ export type LastfmConfiguration = {
 }
 
 export interface Client {
-    search(params: SearchParams): Promise<AxiosResponse<LastFmAlbumSearchResponse>>,
-    getAlbumInfo(params: AlbumInfoParams): Promise<AxiosResponse<LastFmGetAlbumInfoResponse>>
-    getSession(token: string): Promise<AxiosResponse<LastFmGetSessionResponse>>
-    getUserInfo(user: string): Promise<AxiosResponse<LastFmUserGetInfoResponse>>
+    search(params: SearchParams): Promise<LastFmAlbumSearchResponse>,
+    getAlbumInfo(params: AlbumInfoParams): Promise<LastFmGetAlbumInfoResponse>
+    getSession(token: string): Promise<LastFmGetSessionResponse>
+    getUserInfo(user: string): Promise<LastFmUserGetInfoResponse>
 }
 
 export class LastFMClient implements Client {
@@ -44,7 +44,7 @@ export class LastFMClient implements Client {
         });
     }
 
-    public search(params: SearchParams): Promise<AxiosResponse<LastFmAlbumSearchResponse>> {
+    public search(params: SearchParams): Promise<LastFmAlbumSearchResponse> {
         return this.api.get<LastFmAlbumSearchResponse>("/2.0/", {
             params: {
                 method: "album.search",
@@ -53,7 +53,7 @@ export class LastFMClient implements Client {
                 ...params,
             },
         })
-        .then((response) => response)
+        .then(r => r.data)
         .catch((error) => {
             return match(error)
                 .when(
@@ -70,7 +70,7 @@ export class LastFMClient implements Client {
         })
     }
 
-    public getAlbumInfo(params: AlbumInfoParams): Promise<AxiosResponse<LastFmGetAlbumInfoResponse>> {
+    public getAlbumInfo(params: AlbumInfoParams): Promise<LastFmGetAlbumInfoResponse> {
         return this.api.get<LastFmGetAlbumInfoResponse>("/2.0/", {
             params: {
                 method: "album.getInfo",
@@ -79,7 +79,7 @@ export class LastFMClient implements Client {
                 ...params,
             }
         })
-        .then((response) => response)
+        .then(r => r.data)
         .catch((error) => {
             return match(error)
                 .when(
@@ -96,7 +96,7 @@ export class LastFMClient implements Client {
         })
     }
 
-    public getSession(token: string): Promise<AxiosResponse<LastFmGetSessionResponse>> {
+    public getSession(token: string): Promise<LastFmGetSessionResponse> {
         const sig = `api_key${this.cfg.apiKey}methodauth.getSessiontoken${token}${this.cfg.secret}`;
         const hash = crypto.createHash('md5').update(sig).digest('hex')
 
@@ -109,7 +109,7 @@ export class LastFMClient implements Client {
                 format: "json",
             }
         })
-        .then((response) => response)
+        .then(r => r.data)
         .catch((error) => {
             return match(error)
                 .when(
@@ -126,7 +126,7 @@ export class LastFMClient implements Client {
         })
     }
 
-    public getUserInfo(user: string): Promise<AxiosResponse<LastFmUserGetInfoResponse>> {
+    public getUserInfo(user: string): Promise<LastFmUserGetInfoResponse> {
         return this.api.get<LastFmUserGetInfoResponse>("/2.0/", {
             params: {
                 method: "user.getInfo",
@@ -135,7 +135,7 @@ export class LastFMClient implements Client {
                 format: "json",
             }
         })
-        .then((response) => response)
+        .then(r => r.data)
         .catch((error) => {
             return match(error)
                 .when(

@@ -17,9 +17,9 @@ export type DiscogsConfiguration = {
 }
 
 export interface Client {
-    search(params: DiscogsSearchParams): Promise<AxiosResponse<DiscogsSearchResponse>>,
-    masterReleaseById(id: number): Promise<AxiosResponse<DiscogsMaster>>,
-    releaseById(id: number): Promise<AxiosResponse<DiscogsRelease>>,
+    search(params: DiscogsSearchParams): Promise<DiscogsSearchResponse>,
+    masterReleaseById(id: number): Promise<DiscogsMaster>,
+    releaseById(id: number): Promise<DiscogsRelease>,
 }
 
 export class DiscogsClient implements Client {
@@ -40,18 +40,20 @@ export class DiscogsClient implements Client {
         });
     }
 
-    public async search(params: DiscogsSearchParams): Promise<AxiosResponse<DiscogsSearchResponse>> {
+    public async search(params: DiscogsSearchParams): Promise<DiscogsSearchResponse> {
         return this.apiClient
             .get<DiscogsSearchResponse>("/database/search", { params })
+            .then(r => r.data)
             .catch((error) => {
                 logger.error("Discogs: Error searching: ", `params=${JSON.stringify(params)}`, `error=${error}`);
                 throw new Error(`Unexpected error when searching`);
             });
     }
 
-    public async masterReleaseById(id: number): Promise<AxiosResponse<DiscogsMaster>> {
+    public async masterReleaseById(id: number): Promise<DiscogsMaster> {
         logger.debug("Discogs: Fetching master by id: ", "id=", id);
         return this.apiClient.get<DiscogsMaster>(`/masters/${id}`)
+            .then(r => r.data)
             .catch((error) => {
                 logger.error("Discogs: Error fetching master: ", `id=${id}`, `error=${error}`);
                 return match(error)
@@ -64,8 +66,9 @@ export class DiscogsClient implements Client {
             });
     }
 
-    public async releaseById(id: number): Promise<AxiosResponse<DiscogsRelease>> {
+    public async releaseById(id: number): Promise<DiscogsRelease> {
         return this.apiClient.get<DiscogsRelease>(`/releases/${id}`)
+            .then(r => r.data)
             .catch((error) => {
                 logger.error("Discogs: Error fetching release: ", `id=${id}`, `error=${error}`);
                 return match(error)

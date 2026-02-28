@@ -22,8 +22,8 @@ const userInfosCache =  new LRUCache<string, User>({
 export async function getOrCreateSession(token: string): Promise<Session> {
     logger.info(`getOrCreateSession for ${token}`);
 
-    const respSession = await api.getSession(token);
-    const { name, key, subscriber } = respSession.data.session;
+    const response = await api.getSession(token);
+    const { name, key, subscriber } = response.session;
 
     const storage = getStorage('session');
     const optSession = await storage.read<Session>(name);
@@ -51,7 +51,7 @@ export async function getUserInfos(user: string): Promise<User> {
 
     return api.getUserInfo(user)
         .then(response => {
-            const user = lastFmUserToUser(response.data.user)
+            const user = lastFmUserToUser(response.user)
             userInfosCache.set(user.name, user);
             return user;
         })

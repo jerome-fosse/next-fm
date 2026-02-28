@@ -38,9 +38,8 @@ describe("LastFMClient - getAlbumInfo", () => {
                 album: "Believe",
             }
         });
-        expect(response.status).toBe(200);
-        expect(response.data.album.artist).toBe("Cher");
-        expect(response.data.album.name).toBe("Believe");
+        expect(response.album.artist).toBe("Cher");
+        expect(response.album.name).toBe("Believe");
     });
 
     it("should throw Last.fm error message on API error", async () => {

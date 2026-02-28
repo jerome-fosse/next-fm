@@ -37,8 +37,7 @@ describe("LastFMClient - getUserInfo", () => {
                 format: "json",
             }
         });
-        expect(response.status).toBe(200);
-        expect(response.data.user.name).toBe("jerome");
+        expect(response.user.name).toBe("jerome");
     });
 
     it("should throw Last.fm error message on API error", async () => {

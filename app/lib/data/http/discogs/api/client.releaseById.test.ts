@@ -30,8 +30,7 @@ describe("DiscogsClient - releaseById", () => {
         const response = await client.releaseById(987);
 
         expect(mockGet).toHaveBeenCalledWith("/releases/987");
-        expect(response.status).toBe(200);
-        expect(response.data.id).toBe(987);
+        expect(response.id).toBe(987);
     });
 
     it("should throw 'not found' error on 404", async () => {

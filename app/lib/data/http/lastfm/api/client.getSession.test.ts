@@ -29,9 +29,8 @@ describe("LastFMClient - getSession", () => {
 
         const response = await client.getSession("test-token");
 
-        expect(response.status).toBe(200);
-        expect(response.data.session.name).toBe("jerome");
-        expect(response.data.session.key).toBe("abc123");
+        expect(response.session.name).toBe("jerome");
+        expect(response.session.key).toBe("abc123");
     });
 
     it("should throw Last.fm error message on API error", async () => {

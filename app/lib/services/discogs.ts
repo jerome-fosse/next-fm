@@ -34,9 +34,9 @@ export async function searchDiscogsAlbums(query: string, page: number = 1): Prom
 
     return api.search({query: query, type: "master", per_page: searchAlbumsPageSize, page: page})
         .then(response => {
-            const albums = response.data.results
+            const albums = response.results
                 .map(item => discogsSearchResultItemToAlbumShort(item));
-            const pagination = discogsPaginationToPagination(response.data.pagination);
+            const pagination = discogsPaginationToPagination(response.pagination);
 
             const result = {albums: albums, pagination: pagination};
             searchCache.set(key, result);
@@ -60,7 +60,7 @@ export async function fetchDiscogsMasterReleaseById(id: number): Promise<Album> 
 
     return api.masterReleaseById(id)
         .then(response => {
-            const album = discogsMasterToAlbum(response.data);
+            const album = discogsMasterToAlbum(response);
             albumsCache.set(album.id, album);
             return album;
         })

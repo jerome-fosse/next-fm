@@ -16,7 +16,7 @@ describe("Lastfm Services", () => {
     });
 
     it("should fetch an Album by it's id", async () => {
-        getAlbumInfo.mockResolvedValue({ data: { album: Albums.BlackSabbath }, status: 200 });
+        getAlbumInfo.mockResolvedValue({ album: Albums.BlackSabbath });
         const album = await fetchLastfmAlbumByIdOrNameAndArtist('1234', '', '');
 
         expect(getAlbumInfo).toHaveBeenCalledWith({mbid: '1234', autocorrect: 1});

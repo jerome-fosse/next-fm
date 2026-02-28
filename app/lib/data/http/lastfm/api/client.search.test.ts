@@ -37,12 +37,11 @@ describe("LastFMClient - search", () => {
                 album: "Black Sabbath",
             }
         });
-        expect(response.status).toBe(200);
-        expect(response.data.results.albummatches.album.length).toBe(2);
-        expect(response.data.results.albummatches.album[0].name).toBe("Black Sabbath");
-        expect(response.data.results.albummatches.album[0].artist).toBe("Black Sabbath");
-        expect(response.data.results.albummatches.album[1].name).toBe("Paranoid");
-        expect(response.data.results.albummatches.album[1].artist).toBe("Black Sabbath");
+        expect(response.results.albummatches.album.length).toBe(2);
+        expect(response.results.albummatches.album[0].name).toBe("Black Sabbath");
+        expect(response.results.albummatches.album[0].artist).toBe("Black Sabbath");
+        expect(response.results.albummatches.album[1].name).toBe("Paranoid");
+        expect(response.results.albummatches.album[1].artist).toBe("Black Sabbath");
     });
 
     it("should throw Last.fm error message on API error", async () => {
