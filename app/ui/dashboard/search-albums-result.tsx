@@ -34,12 +34,6 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
     const [album, setAlbum] = useState<Album | undefined>();
     const [error, setError] = useState<string | undefined>();
 
-    const [showOptions, setShowOptions] = useState<boolean>(false);
-
-    function toggleOptions() {
-        setShowOptions(!showOptions);
-    }
-
     const handleShowAlbum = (album: AlbumShort) => {
         startTransition(async () => {
             const showError = (error: string) => {
@@ -121,18 +115,6 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
                     </form>
                     {album && <AlbumDetails className="flex min-h-0 my-4 p-1 border border-gray-300 shadow-md rounded-md" album={album} />}
                     <div className="flex justify-end space-x-2">
-                        <div className="relative">
-                            <div
-                                className={`absolute z-10 bg-base-200 bottom-0 right-full mx-2 h-44 border border-gray-300 rounded-md shadow-md ${showOptions ? 'block' : 'hidden'}`}>
-                                <label className="label text-sm">
-                                    <input type="checkbox" className="toggle" />
-                                    Editer les informations
-                                </label>
-                            </div>
-                            <button className="btn btn-square btn-ghost" onClick={toggleOptions}>
-                                <SlOptions className="h-5 w-5" />
-                            </button>
-                        </div>
                         <button className="btn btn-secondary">Scrobbler Album</button>
                     </div>
                 </div>
