@@ -7,7 +7,6 @@ import {memo, useRef, useState, useTransition} from "react";
 import AlbumDetails from "@/app/ui/dashboard/album-details";
 import {fetchAlbumAction} from "@/app/lib/actions/album";
 import AlertDialog from "@/app/ui/common/alert-dialog";
-import {SlOptions} from "react-icons/sl";
 import {match, P} from "ts-pattern";
 
 export type Props = {
@@ -92,7 +91,8 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
                 <span className="grow"></span>
                 {pagination && <span>Page {pagination.page} sur {pagination.pages}</span>}
             </div>
-            <div className={`flex flex-wrap content-start w-full h-full border px-2 ${pending || !allImagesLoaded ? 'invisible' : 'visible'} border-gray-300 ${pagination && pagination.pages > 1 ? '' : 'rounded-b-md'} overflow-y-auto`}>
+            <div className={`flex relative content-start w-full h-full border px-2 border-gray-300 ${pagination && pagination.pages > 1 ? '' : 'rounded-b-md'} overflow-y-auto`}>
+                <div className={`flex flex-wrap ${pending || !allImagesLoaded ? 'invisible' : 'visible'}`}>
                     {albums.map((album, index) =>
                         <div key={index}
                              className={`mx-1 my-2 p-2 h-fit border border-gray-300 rounded-md shadow-md cursor-pointer hover:shadow-lg hover:shadow-blue-500/50`}>
@@ -101,6 +101,12 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
                                             showDetailAction={() => handleShowAlbum(album)} />
                         </div>
                     )}
+                </div>
+                {pending || !allImagesLoaded &&
+                    <div className="absolute inset-0 flex items-center justify-center z-10 bg-base-100/50">
+                        <span className="loading loading-spinner loading-lg" />
+                    </div>
+                }
             </div>
             {pagination && pagination.pages > 1 &&
                 <div className={`flex justify-center items-center w-full h-16 px-4 ${pending ? 'btn-disabled' : ''} text-sm bg-secondary-content border border-gray-300 rounded-b-md`}>
