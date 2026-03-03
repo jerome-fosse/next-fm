@@ -11,6 +11,7 @@ type Props = {
     type?: "submit" | "reset" | "button",
     text?: string
     icon?: IconType
+    vMenuPosition?: "top" | "bottom",
     items: DropDownButtonItem[]
 }
 
@@ -23,7 +24,7 @@ export type DropDownButtonItem = {
     default?: boolean
 }
 
-export default function DropDownButton({name = "dropdown-button", type = "button", text = "Button", icon, items}: Props) {
+export default function DropDownButton({name = "dropdown-button", type = "button", text = "Button", vMenuPosition = "bottom", icon, items}: Props) {
     const ButtonIcon = icon;
     const textButton = items.filter(item => item.default == true)
         .map(item => item.textButton)
@@ -36,7 +37,10 @@ export default function DropDownButton({name = "dropdown-button", type = "button
             <button type={type} className="btn btn-secondary join-item border-r-0 mr-0 pr-0 shadow-none">
                 {ButtonIcon != null ? <ButtonIcon className="w-5 h-5"/> : null}{label}
             </button>
-            <div className="dropdown dropdown-bottom dropdown-end">
+            <div className={[
+                `dropdown dropdown-end`
+                , vMenuPosition === "top" ? "dropdown-top" : "dropdown-bottom"
+            ].join(" ")}>
                 <div tabIndex={0} role="button" className="join-item btn btn-secondary border-l-0 ml-0 p-3 shadow-none">
                     <BiSolidDownArrow/>
                 </div>

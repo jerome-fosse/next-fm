@@ -1,17 +1,21 @@
-import {memo} from "react";
+'use client'
+
+import {memo, useState} from "react";
 import {Album} from "@/app/types/albums";
 import Image from "next/image";
 import {DISCOGS, LASTFM} from "@/app/types/common";
-import {logger} from "@/app/lib/utils/logger";
-import {secondsToDisplayTime} from "@/app/lib/utils/duration";
+import {displayTimeToSeconds, secondsToDisplayTime} from "@/app/lib/utils/duration";
+import EditableText from "@/app/ui/common/editable-text";
 
 type Props = {
     className?: string,
     album: Album
 }
 
-const AlbumDetails = memo(function showAlbumDetails({className, album}: Props) {
-    logger.debug(album)
+const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
+    const [durations, setDurations] = useState<number[]>(album.tracks.map(track => track.duration ?? 0));
+    const totalDuration = durations.filter(value => !isNaN(value)).reduce((acc, curr) => acc + curr, 0);
+    console.log(totalDuration)
 
     function albumCover(album: Album): string {
         switch (album.origin) {
@@ -28,6 +32,12 @@ const AlbumDetails = memo(function showAlbumDetails({className, album}: Props) {
         }
     }
 
+    function updateDurationsState(value: string, index: number) {
+        const newDurations = [...durations];
+        newDurations[index] = displayTimeToSeconds(value);
+        setDurations(newDurations);
+    }
+
     const url = albumCover(album);
 
     return (
@@ -37,18 +47,18 @@ const AlbumDetails = memo(function showAlbumDetails({className, album}: Props) {
                     <Image className="rounded-lg" src={url} alt={album.title} fill={true}/>
                 </div>
                 <div className="flex flex-col">
-                    <p className="text-md font-bold">{album.title}</p>
+                    <EditableText name="title" type="textarea" className="text-md font-bold" defaultValue={album.title} iconClassName="h-4 w-4" />
                     <p className="flex-1 text-sm">{album.artists.map(artist => artist.name).join(', ')}</p>
                     {album.year &&
                         <div className="flex text-sm my-0.5">
                             <div className="w-20 font-italic">Année :</div>
-                            <div>{album.year}</div>
+                            <EditableText name="year" type="input" defaultValue={album.year} min={1900} iconClassName="h-4 w-4" />
                         </div>
                     }
-                    {album.duration &&
+                    {(totalDuration > 0 || album.duration) &&
                         <div className="flex text-sm my-0.5">
                             <div className="w-20 font-italic">Durée :</div>
-                            <div>{secondsToDisplayTime(album.duration)}</div>
+                            <div>{secondsToDisplayTime(totalDuration > 0 ? totalDuration : (album.duration ?? 0))}</div>
                         </div>
                     }
                     {album.released &&
@@ -101,9 +111,15 @@ const AlbumDetails = memo(function showAlbumDetails({className, album}: Props) {
                         <tbody>
                         {album.tracks.map((track, index) => (
                             <tr key={index}>
-                                <td className="p-1.5">{index + 1}</td>
-                                <td className="p-1.5">{track.title}</td>
-                                <td className="p-1.5" align="right">{track.duration ? secondsToDisplayTime(track.duration) : ''}</td>
+                                <td className="p-1">{index + 1}</td>
+                                <td className="p-1"><EditableText name="trackname" type="textarea" defaultValue={track.title} iconClassName="h-4 w-4" /></td>
+                                <td className="p-1 w-px">
+                                    <div className="flex justify-end">
+                                        <EditableText name="duration" type="input" pattern="^[0-9]{2}:[0-9]{2}$"
+                                                      onChange={value => updateDurationsState(value, index) }
+                                                      defaultValue={track.duration ? secondsToDisplayTime(track.duration) : '00:00'} iconClassName="h-4 w-4" />
+                                    </div>
+                                </td>
                             </tr>
                         ))}
                         </tbody>

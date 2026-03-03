@@ -3,11 +3,15 @@ import {DISCOGS, LASTFM, Pagination} from "@/app/types/common";
 import {Album, AlbumShort} from "@/app/types/albums";
 import PaginationControl from "@/app/ui/common/pagination";
 import {logger} from "@/app/lib/utils/logger";
-import {memo, useRef, useState, useTransition} from "react";
+import {useRef, useState, useTransition} from "react";
 import AlbumDetails from "@/app/ui/dashboard/album-details";
 import {fetchAlbumAction} from "@/app/lib/actions/album";
 import AlertDialog from "@/app/ui/common/alert-dialog";
 import {match, P} from "ts-pattern";
+import DropDownButton from "@/app/ui/common/dropdown-button";
+import {SiDiscogs} from "react-icons/si";
+import {PiPlaylist} from "react-icons/pi";
+import {scrobbleAction} from "@/app/lib/actions/scrobble";
 
 export type Props = {
     className?: string,
@@ -17,13 +21,7 @@ export type Props = {
     onChangePage: (page: number) => void
 }
 
-const SearchAlbumsResult = memo(function SearchAlbumsResult({
-                                                                onChangePage,
-                                                                className,
-                                                                albums,
-                                                                pending,
-                                                                pagination
-                                                            }: Props) {
+export default function SearchAlbumsResult({onChangePage, className, albums, pending, pagination}: Props) {
 
     logger.debug("SearchAlbumsResult Params:", "className=", className, "albums=", albums, "pagination=", pagination);
 
@@ -61,13 +59,6 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
 
     const [allImagesLoaded, setAllImagesLoaded] = useState(false);
     const imagesLoaded = useRef(0);
-    const albumsRef = useRef(albums);
-
-    if (albumsRef.current !== albums) {
-        albumsRef.current = albums;
-        setAllImagesLoaded(false);
-        imagesLoaded.current = 0;
-    }
 
     const handleImageLoad = () => {
         imagesLoaded.current++;
@@ -83,6 +74,11 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
         return null;
     }
 
+    const menuItems = [
+        {textMenuItem: 'album', textButton: 'Scrobbler l\'album', icon: SiDiscogs, default: true},
+        {textMenuItem: 'pistes', textButton: 'Scrobbler les pistes', icon: PiPlaylist},
+    ]
+
     return (
         <div className={`flex flex-col ${className || ''}`}>
             <div
@@ -91,8 +87,8 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
                 <span className="grow"></span>
                 {pagination && <span>Page {pagination.page} sur {pagination.pages}</span>}
             </div>
-            <div className={`flex relative content-start w-full h-full border px-2 border-gray-300 ${pagination && pagination.pages > 1 ? '' : 'rounded-b-md'} overflow-y-auto`}>
-                <div className={`flex flex-wrap ${pending || !allImagesLoaded ? 'invisible' : 'visible'}`}>
+            <div className={`flex relative w-full h-full border px-2 border-gray-300 ${pagination && pagination.pages > 1 ? '' : 'rounded-b-md'} overflow-y-auto`}>
+                <div className={`flex flex-wrap content-start ${pending || !allImagesLoaded ? 'invisible' : 'visible'}`}>
                     {albums.map((album, index) =>
                         <div key={index}
                              className={`mx-1 my-2 p-2 h-fit border border-gray-300 rounded-md shadow-md cursor-pointer hover:shadow-lg hover:shadow-blue-500/50`}>
@@ -119,17 +115,16 @@ const SearchAlbumsResult = memo(function SearchAlbumsResult({
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost border-none absolute right-2 top-2">X</button>
                     </form>
-                    {album && <AlbumDetails className="flex min-h-0 my-4 p-1 border border-gray-300 shadow-md rounded-md" album={album} />}
-                    <div className="flex justify-end space-x-2">
-                        <button className="btn btn-secondary">Scrobbler Album</button>
-                    </div>
+                    <form action={scrobbleAction} className="flex flex-col min-h-0">
+                        {album && <AlbumDetails key={`${album.origin}_${album.id}`} className="flex min-h-0 my-4 p-1 border border-gray-300 shadow-md rounded-md" album={album} />}
+                        <div className="flex justify-end space-x-2">
+                            <DropDownButton name="scrobbling" type="submit" vMenuPosition="top" items={menuItems} />
+                        </div>
+                    </form>
                 </div>
             </dialog>
 
             <AlertDialog ref={errorModal} message={error ?? ''} />
-
         </div>
-)
-});
-
-export default SearchAlbumsResult;
+    )
+}

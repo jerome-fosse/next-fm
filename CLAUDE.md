@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+## Principes généraux
+
+- **KISS** : toujours privilégier la solution la plus simple, dans tous les cas. La complexité n'est justifiée que si une solution simple ne suffit pas.
+- **Think twice** : quand une solution est trouvée, la challenger pour en trouver une plus simple avant de l'appliquer.
 
 ## Key Patterns
 
