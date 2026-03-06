@@ -3,6 +3,7 @@ import {Client, LastFMClient} from "@/app/lib/data/http/lastfm/api/client";
 import axios from "axios";
 
 vi.mock("axios");
+vi.mock("@/app/lib/data/storage", () => ({ getStorage: vi.fn() }));
 
 const mockGet = vi.fn();
 vi.mocked(axios.create).mockReturnValue({ get: mockGet } as never);

@@ -6,6 +6,7 @@ import Image from "next/image";
 import {DISCOGS, LASTFM} from "@/app/types/common";
 import {displayTimeToSeconds, secondsToDisplayTime} from "@/app/lib/utils/duration";
 import EditableText from "@/app/ui/common/editable-text";
+import {match} from "ts-pattern";
 
 type Props = {
     className?: string,
@@ -15,22 +16,6 @@ type Props = {
 const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
     const [durations, setDurations] = useState<number[]>(album.tracks.map(track => track.duration ?? 0));
     const totalDuration = durations.filter(value => !isNaN(value)).reduce((acc, curr) => acc + curr, 0);
-    console.log(totalDuration)
-
-    function albumCover(album: Album): string {
-        switch (album.origin) {
-            case DISCOGS :
-                return album.images
-                    ?.filter(image => image.type === 'primary')
-                    .at(0)?.uri ?? "/images/image-not-found.png";
-            case LASTFM :
-                return album.images
-                    ?.filter(image => image.size === 'large')
-                    .at(0)?.uri ?? "/images/image-not-found.png";
-            default:
-                return "/images/image-not-found.png"
-        }
-    }
 
     function updateDurationsState(value: string, index: number) {
         const newDurations = [...durations];
@@ -38,7 +23,10 @@ const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
         setDurations(newDurations);
     }
 
-    const url = albumCover(album);
+    const url = match(album.origin)
+        .with(DISCOGS, () => album.images?.filter(image => image.type === 'primary').at(0)?.uri ?? "/images/image-not-found.png")
+        .with(LASTFM, () => album.images?.filter(image => image.size === 'large').at(0)?.uri ?? "/images/image-not-found.png")
+        .exhaustive();
 
     return (
         <div className={`flex flex-col space-y-2 ${className ?? ''}`}>
@@ -48,11 +36,11 @@ const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
                 </div>
                 <div className="flex flex-col">
                     <EditableText name="title" type="textarea" className="text-md font-bold" defaultValue={album.title} iconClassName="h-4 w-4" />
-                    <p className="flex-1 text-sm">{album.artists.map(artist => artist.name).join(', ')}</p>
+                    <EditableText name="artists" type="textarea" className="text-sm" defaultValue={album.artists.map(artist => artist.name).join(', ')} iconClassName="h-4 w-4" />
                     {album.year &&
                         <div className="flex text-sm my-0.5">
                             <div className="w-20 font-italic">Année :</div>
-                            <EditableText name="year" type="input" defaultValue={album.year} min={1900} iconClassName="h-4 w-4" />
+                            <div>{album.year}</div>
                         </div>
                     }
                     {(totalDuration > 0 || album.duration) &&

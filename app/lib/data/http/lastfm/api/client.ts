@@ -4,12 +4,17 @@ import {
     LastFmAlbumSearchResponse,
     LastFmGetAlbumInfoResponse,
     LastFmGetSessionResponse,
+    LastFmScrobbleResponse,
     LastFmUserGetInfoResponse,
+    Scrobble,
     SearchParams
 } from "@/app/lib/data/http/lastfm/model/types";
 import crypto from "crypto";
 import {match} from "ts-pattern";
 import {logger} from "@/app/lib/utils/logger";
+import {getStorage} from "@/app/lib/data/storage";
+import {Session} from "@/app/types/authent";
+import {XMLParser} from "fast-xml-parser";
 
 export type LastfmConfiguration = {
     apiKey: string,
@@ -24,6 +29,7 @@ export interface Client {
     getAlbumInfo(params: AlbumInfoParams): Promise<LastFmGetAlbumInfoResponse>
     getSession(token: string): Promise<LastFmGetSessionResponse>
     getUserInfo(user: string): Promise<LastFmUserGetInfoResponse>
+    scrobble(scrobbles: Scrobble[]): Promise<LastFmScrobbleResponse>
 }
 
 export class LastFMClient implements Client {
@@ -96,8 +102,12 @@ export class LastFMClient implements Client {
     }
 
     public getSession(token: string): Promise<LastFmGetSessionResponse> {
-        const sig = `api_key${this.cfg.apiKey}methodauth.getSessiontoken${token}${this.cfg.secret}`;
-        const hash = crypto.createHash('md5').update(sig).digest('hex')
+        const params = [
+            ["api_key", this.cfg.apiKey],
+            ["method", "auth.getSession"],
+            ["token", token],
+        ]
+        const hash = this.buildApiSignature(params, this.cfg.secret)
 
         return this.api.get<LastFmGetSessionResponse>("/2.0/", {
             params: {
@@ -149,5 +159,50 @@ export class LastFMClient implements Client {
                     throw new Error("Unexpected error when fetching user info")
                 })
         })
+    }
+
+    public async scrobble(scrobbles: Scrobble[]): Promise<LastFmScrobbleResponse> {
+        const storage = getStorage("sessions")
+        const result = await storage.read<Session>("jerome_fosse")
+        if (!result.success) {
+            logger.error("LastFM: scrobble", "Failed to read session", result.error)
+            throw new Error("Failed to read session")
+        }
+        const session = result.data
+
+        const params = [
+            ["api_key", this.cfg.apiKey],
+            ["method", "auth.getSession"],
+            ["sk", session.key],
+            ...scrobbles.map((s, i) => [`artist[${i}]`, s.artist]),
+            ...scrobbles.map((s, i) => [`track[${i}]`, s.track]),
+            ...scrobbles.map((s, i) => [`timestamp[${i}]`, s.timestamp.toString()]),
+            ...scrobbles.flatMap((s, i) => s.trackNumber ? [[`trackNumber[${i}]`, s.trackNumber.toString(10)]] : []),
+            ...scrobbles.flatMap((s, i) => s.albumArtist ? [[`albumArtist[${i}]`, s.albumArtist]] : []),
+            ...scrobbles.map((s, i) => [`duration[${i}]`, (s.duration ?? 180).toString(10)]),
+        ];
+
+        const sig = this.buildApiSignature(params, this.cfg.secret)
+
+        return this.api.post<string>("/2.0/", new URLSearchParams({
+            api_sig: sig,
+            ...Object.fromEntries(params)
+        }))
+            .then(r => {
+                const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "" });
+                return parser.parse(r.data) as LastFmScrobbleResponse;
+            })
+            .catch((error) => {
+                logger.error("LastFM: scrobble", error.message)
+                throw new Error("Unexpected error when scrobbling");
+            })
+    }
+
+    private buildApiSignature(params: string[][], secret: string): string {
+        const sig = params.sort()
+            .map(([key, value]) => `${key}${value}`)
+            .reduce((acc, curr) => `${acc}${curr}`, "") + secret;
+
+        return crypto.createHash('md5').update(sig).digest('hex');
     }
 }

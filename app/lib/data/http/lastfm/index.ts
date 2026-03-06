@@ -1,4 +1,4 @@
-import "server-only"
+//import "server-only"
 import {Client, LastfmConfiguration, LastFMClient} from "@/app/lib/data/http/lastfm/api/client";
 import config from "@/app/config";
 

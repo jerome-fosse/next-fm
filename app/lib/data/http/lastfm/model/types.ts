@@ -140,3 +140,34 @@ export type LastFmUser = {
     type: string,
 }
 
+export type Scrobble = {
+    artist: string,
+    track: string,
+    timestamp: number,
+    album?: string,
+    context?: string,
+    streamId?: string,
+    chosenByUser?: boolean,
+    trackNumber?: number,
+    mbid?: string,
+    albumArtist?: string,
+    duration?: number,
+}
+
+export type LastFmScrobbleResponse = {
+    lfm: {
+        status: "ok" | "failed",
+        scrobbles: {
+            accepted: number,
+            ignored: number,
+            scrobble: {
+                track: { "#text": string, corrected: 0 | 1 },
+                artist: { "#text": string, corrected: 0 | 1 },
+                album: { "#text": string, corrected: 0 | 1 },
+                albumArtist: { "#text": string, corrected: 0 | 1 },
+                timestamp: number,
+                ignoredMessage: { "#text": string, code: 0 | 1 | 2 | 3 | 4 | 5 }
+            }[]
+        }
+    }
+}
