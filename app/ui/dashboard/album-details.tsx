@@ -6,6 +6,8 @@ import Image from "next/image";
 import {DISCOGS, LASTFM} from "@/app/types/common";
 import {displayTimeToSeconds, secondsToDisplayTime} from "@/app/lib/utils/duration";
 import EditableText from "@/app/ui/common/editable-text";
+import {match} from "ts-pattern";
+import {logger} from "@/app/lib/utils/logger";
 
 type Props = {
     className?: string,
@@ -13,24 +15,11 @@ type Props = {
 }
 
 const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
-    const [durations, setDurations] = useState<number[]>(album.tracks.map(track => track.duration ?? 0));
+    const initialDurations = album.tracks  ? album.tracks.map(track => track.duration ?? 0) : []
+    const [durations, setDurations] = useState<number[]>(initialDurations);
     const totalDuration = durations.filter(value => !isNaN(value)).reduce((acc, curr) => acc + curr, 0);
-    console.log(totalDuration)
 
-    function albumCover(album: Album): string {
-        switch (album.origin) {
-            case DISCOGS :
-                return album.images
-                    ?.filter(image => image.type === 'primary')
-                    .at(0)?.uri ?? "/images/image-not-found.png";
-            case LASTFM :
-                return album.images
-                    ?.filter(image => image.size === 'large')
-                    .at(0)?.uri ?? "/images/image-not-found.png";
-            default:
-                return "/images/image-not-found.png"
-        }
-    }
+    logger.debug(album)
 
     function updateDurationsState(value: string, index: number) {
         const newDurations = [...durations];
@@ -38,7 +27,10 @@ const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
         setDurations(newDurations);
     }
 
-    const url = albumCover(album);
+    const url = match(album.origin)
+        .with(DISCOGS, () => album.images?.filter(image => image.type === 'primary').at(0)?.uri ?? "/images/image-not-found.png")
+        .with(LASTFM, () => album.images?.filter(image => image.size === 'large').at(0)?.uri ?? "/images/image-not-found.png")
+        .exhaustive();
 
     return (
         <div className={`flex flex-col space-y-2 ${className ?? ''}`}>
@@ -48,11 +40,11 @@ const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
                 </div>
                 <div className="flex flex-col">
                     <EditableText name="title" type="textarea" className="text-md font-bold" defaultValue={album.title} iconClassName="h-4 w-4" />
-                    <p className="flex-1 text-sm">{album.artists.map(artist => artist.name).join(', ')}</p>
+                    <EditableText name="artists" type="textarea" className="text-sm" defaultValue={album.artists.map(artist => artist.name).join(', ')} iconClassName="h-4 w-4" />
                     {album.year &&
                         <div className="flex text-sm my-0.5">
                             <div className="w-20 font-italic">Année :</div>
-                            <EditableText name="year" type="input" defaultValue={album.year} min={1900} iconClassName="h-4 w-4" />
+                            <div>{album.year}</div>
                         </div>
                     }
                     {(totalDuration > 0 || album.duration) &&
@@ -112,7 +104,14 @@ const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
                         {album.tracks.map((track, index) => (
                             <tr key={index}>
                                 <td className="p-1">{index + 1}</td>
-                                <td className="p-1"><EditableText name="trackname" type="textarea" defaultValue={track.title} iconClassName="h-4 w-4" /></td>
+                                <td className="p-1">
+                                    <div className="flex flex-wrap space-x-2 items-baseline">
+                                        <textarea className="outline-none input-ghost cursor-default pointer-events-none resize-none field-sizing-content" name="trackName" defaultValue={track.title} readOnly={true} />
+                                        {track.artists && track.artists.length > 0 &&
+                                           <input className="outline-none input-ghost cursor-default pointer-events-none text-[8px]" name="trackArtist" type="text" defaultValue={track.artists?.map(artist => artist.name).join(', ')} readOnly={true} />
+                                        }
+                                    </div>
+                                </td>
                                 <td className="p-1 w-px">
                                     <div className="flex justify-end">
                                         <EditableText name="duration" type="input" pattern="^[0-9]{2}:[0-9]{2}$"

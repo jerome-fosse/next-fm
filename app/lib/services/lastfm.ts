@@ -6,6 +6,9 @@ import {lastfmAlbumToAlbum, lastfmSearchResultItemToAlbumShort} from "@/app/lib/
 import {logger} from "@/app/lib/utils/logger";
 import config from "@/app/config";
 import {LRUCache} from "lru-cache";
+import {lastfmScrobbleResponseToScrobbleReport} from "@/app/lib/services/mapper/scrobble";
+import {ScrobbleReport} from "@/app/types/scrobble";
+import {getConnectedUserName} from "@/app/lib/services/authent";
 
 const api = lastfm.createClientWithDefaultConfig();
 const searchAlbumsPageSize = config.lastfm.searchPageSize;
@@ -79,5 +82,33 @@ export async function fetchLastfmAlbumByIdOrNameAndArtist(id: string = '', title
         .catch((error) => {
             logger.error("fetchLastfmAlbumByIdOrNameAndArtist:", error);
             throw new Error(`Erreur lors du chargement de l'album${error ? ': ' + error.message : '.'}`, error);
+        });
+}
+
+export async function scrobbleTracks(albumTitle: string, albumArtist: string, tracks: string[], artists: string[], durations: number[]): Promise<{status: "ok" | "failed", report: ScrobbleReport}> {
+    logger.info(`Scrobble ${tracks.length} titres de l'album ${albumTitle} par ${albumArtist}.`)
+
+    const username = await getConnectedUserName();
+    if (!username) {
+        throw new Error("Utilisateur non connecté");
+    }
+
+    const now = Date.now() / 1000;
+    const scrobbles = tracks.map((track, index) => ({
+        artist: artists[index],
+        track: track,
+        timestamp: now + (durations.slice(0, index).reduce((a, b) => a + b, 0)),
+        album: albumTitle,
+        albumArtist: albumArtist,
+        duration: durations[index],
+    }))
+
+    return api.scrobble(username, scrobbles)
+        .then(response => {
+            return {status: response.lfm.status, report: lastfmScrobbleResponseToScrobbleReport(response)};
+        })
+        .catch(error => {
+            logger.error("scrobbleTracks:", error);
+            throw new Error(`Erreur lors de l'envoi des scrobbles${error ? ': ' + error.message : '.'}`, error);
         });
 }

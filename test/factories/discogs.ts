@@ -19,6 +19,7 @@ export const makeDiscogsTrack = (overrides?: Partial<DiscogsTrack>): DiscogsTrac
     type_: "track",
     title: "So What",
     duration: "9:22",
+    artists: [],
     extraartists: [],
     ...overrides,
 })

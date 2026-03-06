@@ -21,13 +21,13 @@ export const Masters = {
         genres: ["Rock"],
         styles: ["Blues Rock", "hard Rock", "Heav Metal"],
         tracklist: [
-            {position: "A1", type_: "track", title: "Black Sabbath", duration: "6:22", extraartists: []},
-            {position: "A2", type_: "track", title: "The Wizard", duration: "4:25", extraartists: []},
-            {position: "A3", type_: "track", title: "Behind The Wall Of Sleep", duration: "3:37", extraartists: []},
-            {position: "A4", type_: "track", title: "N.I.B.", duration: "6:07", extraartists: []},
-            {position: "B1", type_: "track", title: "Evil Woman, Don't Play Your Games With Me", duration: "3:27", extraartists: []},
-            {position: "B2", type_: "track", title: "Sleeping Village", duration: "3:46", extraartists: []},
-            {position: "B3", type_: "track", title: "Warning", duration: "10:33", extraartists: []},
+            {position: "A1", type_: "track", title: "Black Sabbath", duration: "6:22", artists: [Artists.BlackSabbath], extraartists: []},
+            {position: "A2", type_: "track", title: "The Wizard", duration: "4:25", artists: [Artists.BlackSabbath], extraartists: []},
+            {position: "A3", type_: "track", title: "Behind The Wall Of Sleep", duration: "3:37", artists: [Artists.BlackSabbath], extraartists: []},
+            {position: "A4", type_: "track", title: "N.I.B.", duration: "6:07", artists: [Artists.BlackSabbath], extraartists: []},
+            {position: "B1", type_: "track", title: "Evil Woman, Don't Play Your Games With Me", duration: "3:27", artists: [Artists.BlackSabbath], extraartists: []},
+            {position: "B2", type_: "track", title: "Sleeping Village", duration: "3:46", artists: [Artists.BlackSabbath], extraartists: []},
+            {position: "B3", type_: "track", title: "Warning", duration: "10:33", artists: [Artists.BlackSabbath], extraartists: []},
         ],
         images: [
             {

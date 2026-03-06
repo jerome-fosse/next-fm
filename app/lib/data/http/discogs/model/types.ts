@@ -143,6 +143,7 @@ export type DiscogsTrack = {
     type_: string
     title: string
     duration: string
+    artists: DiscogsArtist[]
     extraartists: DiscogsArtist[]
 }
 

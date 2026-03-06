@@ -1,0 +1,60 @@
+<lfm status="ok">
+    <scrobbles ignored="0" accepted="7">
+        <scrobble>
+            <track corrected="0">Black Sabbath</track>
+            <artist corrected="0">Black Sabbath</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773245754.78</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">The Wizard</track>
+            <artist corrected="0">Black Sabbath</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773246136.78</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Behind The Wall Of Sleep</track>
+            <artist corrected="0">Black Sabbath</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773246401.78</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">N.I.B.</track>
+            <artist corrected="0">Black Sabbath</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773246618.78</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Evil Woman, Don&apos;t Play Your Games With Me</track>
+            <artist corrected="0">Black Sabbath</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773246985.78</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Sleeping Village</track>
+            <artist corrected="0">Black Sabbath</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773247192.78</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Warning</track>
+            <artist corrected="0">Black Sabbath</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773247418.78</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+    </scrobbles>
+</lfm>

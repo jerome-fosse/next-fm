@@ -1,17 +1,32 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {Client, LastFMClient} from "@/app/lib/data/http/lastfm/api/client";
 import axios from "axios";
+import {getStorage, NOT_FOUND} from "@/app/lib/data/storage";
+import {readFileSync} from "fs";
+import {Scrobbles} from "@test/data/lastfm";
 
 vi.mock("axios");
+vi.mock("@/app/lib/data/storage", () => ({
+    NOT_FOUND: "NOT_FOUND",
+    getStorage: vi.fn()
+}));
+
+const mockReadStorage = vi.fn();
+vi.mocked(getStorage).mockReturnValue({
+    read: mockReadStorage,
+    write: vi.fn()
+})
 
 const mockGet = vi.fn();
-vi.mocked(axios.create).mockReturnValue({ get: mockGet } as never);
+const mockPost = vi.fn();
+vi.mocked(axios.create).mockReturnValue({ get: mockGet, post: mockPost } as never);
 
 describe("LastFMClient - search", () => {
     let client: Client;
 
     beforeEach(() => {
         mockGet.mockReset();
+        mockReadStorage.mockReset();
         client = new LastFMClient({
             apiKey: "test-api-key",
             secret: "test-secret",
@@ -29,14 +44,14 @@ describe("LastFMClient - search", () => {
 
         const response = await client.search({ album: "Black Sabbath" });
 
-        expect(mockGet).toHaveBeenCalledWith("/2.0/", {
+        expect(mockGet).toHaveBeenCalledWith("/2.0/", expect.objectContaining({
             params: {
                 method: "album.search",
                 api_key: "test-api-key",
                 format: "json",
                 album: "Black Sabbath",
             }
-        });
+        }));
         expect(response.results.albummatches.album.length).toBe(2);
         expect(response.results.albummatches.album[0].name).toBe("Black Sabbath");
         expect(response.results.albummatches.album[0].artist).toBe("Black Sabbath");
@@ -69,6 +84,7 @@ describe("LastFMClient - getUserInfo", () => {
 
     beforeEach(() => {
         mockGet.mockReset();
+        mockReadStorage.mockReset();
         client = new LastFMClient({
             apiKey: "test-api-key",
             secret: "test-secret",
@@ -86,14 +102,14 @@ describe("LastFMClient - getUserInfo", () => {
 
         const response = await client.getUserInfo("jerome");
 
-        expect(mockGet).toHaveBeenCalledWith("/2.0/", {
+        expect(mockGet).toHaveBeenCalledWith("/2.0/", expect.objectContaining({
             params: {
                 method: "user.getInfo",
                 user: "jerome",
                 api_key: "test-api-key",
                 format: "json",
             }
-        });
+        }));
         expect(response.user.name).toBe("jerome");
     });
 
@@ -122,6 +138,7 @@ describe("LastFMClient - getSession", () => {
 
     beforeEach(() => {
         mockGet.mockReset();
+        mockReadStorage.mockReset();
         client = new LastFMClient({
             apiKey: "test-api-key",
             secret: "test-secret",
@@ -168,6 +185,7 @@ describe("LastFMClient - getAlbumInfo", () => {
 
     beforeEach(() => {
         mockGet.mockReset();
+        mockReadStorage.mockReset();
         client = new LastFMClient({
             apiKey: "test-api-key",
             secret: "test-secret",
@@ -185,7 +203,7 @@ describe("LastFMClient - getAlbumInfo", () => {
 
         const response = await client.getAlbumInfo({ artist: "Cher", album: "Believe" });
 
-        expect(mockGet).toHaveBeenCalledWith("/2.0/", {
+        expect(mockGet).toHaveBeenCalledWith("/2.0/", expect.objectContaining({
             params: {
                 method: "album.getInfo",
                 api_key: "test-api-key",
@@ -193,7 +211,7 @@ describe("LastFMClient - getAlbumInfo", () => {
                 artist: "Cher",
                 album: "Believe",
             }
-        });
+        }));
         expect(response.album.artist).toBe("Cher");
         expect(response.album.name).toBe("Believe");
     });
@@ -216,3 +234,69 @@ describe("LastFMClient - getAlbumInfo", () => {
             .rejects.toThrow("Unexpected error when fetching album info");
     });
 });
+
+describe("LastFMClient - Scrobble", () => {
+    let client: Client;
+
+    beforeEach(() => {
+        mockPost.mockReset();
+        mockReadStorage.mockReset();
+        client = new LastFMClient({
+            apiKey: "test-api-key",
+            secret: "test-secret",
+            baseUrl: "https://ws.audioscrobbler.com",
+            timeout: 5000,
+            userAgent: "TestAgent/1.0",
+        });
+    });
+
+    it("should scrobble an album with all tracks accepted", async () => {
+        mockReadStorage.mockReturnValue({
+            success: true,
+            data: {user: "user_name", "key": "apikey", "subscriber": 0, "createdAt": "2026-02-24T21:44:05.340Z"}
+        });
+
+        const xml = readFileSync("test/fixtures/scrobble-success-black-sabbath.xml", "utf8");
+        mockPost.mockResolvedValue({ data: xml, status: 200 });
+
+        const response = await client.scrobble("user_name", Scrobbles.BlackSabbath);
+
+        expect(response.lfm.status).toBe("ok");
+        expect(response.lfm.scrobbles.ignored).toBe(0);
+        expect(response.lfm.scrobbles.accepted).toBe(7);
+        for (const i in Scrobbles.BlackSabbath) {
+            const scrobble = Scrobbles.BlackSabbath[i];
+            expect(response.lfm.scrobbles.scrobble[i].artist["#text"]).toBe(scrobble.artist);
+            expect(response.lfm.scrobbles.scrobble[i].track["#text"]).toBe(scrobble.track);
+        }
+    })
+
+    it("should scrobble an album with some tracks rejected", async () => {
+        mockReadStorage.mockReturnValue({
+            success: true,
+            data: {user: "user_name", "key": "apikey", "subscriber": 0, "createdAt": "2026-02-24T21:44:05.340Z"}
+        });
+
+        const xml = readFileSync("test/fixtures/scrobble-success-voivod-war-and-pain.xml", "utf8");
+        mockPost.mockResolvedValue({ data: xml, status: 200 });
+
+        const response = await client.scrobble("user_name", Scrobbles.WarAndPain);
+        expect(response.lfm.status).toBe("ok");
+        expect(response.lfm.scrobbles.ignored).toBe(2);
+        expect(response.lfm.scrobbles.accepted).toBe(9);
+        for (const i in Scrobbles.WarAndPain) {
+            expect(response.lfm.scrobbles.scrobble[i].artist["#text"]).toBe("Voïvod");
+        }
+        expect(response.lfm.scrobbles.scrobble[9].track["#text"]).toBe("Iron Side");
+        expect(response.lfm.scrobbles.scrobble[9].ignoredMessage.code).toBe(1);
+        expect(response.lfm.scrobbles.scrobble[10].track["#text"]).toBe("Blower Side");
+        expect(response.lfm.scrobbles.scrobble[10].ignoredMessage.code).toBe(1);
+    })
+
+    it("should thrown an exception when the user is not connected", async () => {
+        mockReadStorage.mockReturnValue({ success: false, errorType: NOT_FOUND, error: "file not found" });
+
+        await expect(client.scrobble("user", [{artist: "Cher", track: "Believe", timestamp: 0,}]))
+            .rejects.toThrow("Failed to read session");
+    })
+})

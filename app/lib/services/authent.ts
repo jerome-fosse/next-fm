@@ -60,7 +60,7 @@ export async function getUserInfos(user: string): Promise<User> {
         });
 }
 
-export async function getConnectedUserInfos(): Promise<User | undefined> {
+export async function getConnectedUserName(): Promise<string | undefined> {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('nextfm-session');
     const parsed = sessionCookieSchema.safeParse(JSON.parse(sessionCookie?.value ?? '{}'));
@@ -69,5 +69,14 @@ export async function getConnectedUserInfos(): Promise<User | undefined> {
         return;
     }
 
-    return await getUserInfos(parsed.data.username);
+    return parsed.data.username;
+}
+
+export async function getConnectedUserInfos(): Promise<User | undefined> {
+    const username = await getConnectedUserName();
+    if (!username) {
+        return;
+    }
+
+    return await getUserInfos(username);
 }

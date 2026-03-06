@@ -4,12 +4,17 @@ import {
     LastFmAlbumSearchResponse,
     LastFmGetAlbumInfoResponse,
     LastFmGetSessionResponse,
+    LastFmScrobbleResponse,
     LastFmUserGetInfoResponse,
+    Scrobble,
     SearchParams
 } from "@/app/lib/data/http/lastfm/model/types";
 import crypto from "crypto";
 import {match} from "ts-pattern";
 import {logger} from "@/app/lib/utils/logger";
+import {getStorage} from "@/app/lib/data/storage";
+import {Session} from "@/app/types/authent";
+import {XMLParser} from "fast-xml-parser";
 
 export type LastfmConfiguration = {
     apiKey: string,
@@ -24,6 +29,7 @@ export interface Client {
     getAlbumInfo(params: AlbumInfoParams): Promise<LastFmGetAlbumInfoResponse>
     getSession(token: string): Promise<LastFmGetSessionResponse>
     getUserInfo(user: string): Promise<LastFmUserGetInfoResponse>
+    scrobble(username: string, scrobbles: Scrobble[]): Promise<LastFmScrobbleResponse>
 }
 
 export class LastFMClient implements Client {
@@ -37,14 +43,16 @@ export class LastFMClient implements Client {
             timeout: config.timeout,
             headers: {
                 "User-Agent": config.userAgent,
-                "Content-Type": "application/json",
-                "Accept": "application/json",
             }
         });
     }
 
     public search(params: SearchParams): Promise<LastFmAlbumSearchResponse> {
         return this.api.get<LastFmAlbumSearchResponse>("/2.0/", {
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
             params: {
                 method: "album.search",
                 api_key: this.cfg.apiKey,
@@ -71,6 +79,10 @@ export class LastFMClient implements Client {
 
     public getAlbumInfo(params: AlbumInfoParams): Promise<LastFmGetAlbumInfoResponse> {
         return this.api.get<LastFmGetAlbumInfoResponse>("/2.0/", {
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
             params: {
                 method: "album.getInfo",
                 api_key: this.cfg.apiKey,
@@ -96,10 +108,18 @@ export class LastFMClient implements Client {
     }
 
     public getSession(token: string): Promise<LastFmGetSessionResponse> {
-        const sig = `api_key${this.cfg.apiKey}methodauth.getSessiontoken${token}${this.cfg.secret}`;
-        const hash = crypto.createHash('md5').update(sig).digest('hex')
+        const params = [
+            ["api_key", this.cfg.apiKey],
+            ["method", "auth.getSession"],
+            ["token", token],
+        ]
+        const hash = this.buildApiSignature(params, this.cfg.secret)
 
         return this.api.get<LastFmGetSessionResponse>("/2.0/", {
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
             params: {
                 method: "auth.getSession",
                 token: token,
@@ -127,6 +147,10 @@ export class LastFMClient implements Client {
 
     public getUserInfo(user: string): Promise<LastFmUserGetInfoResponse> {
         return this.api.get<LastFmUserGetInfoResponse>("/2.0/", {
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
             params: {
                 method: "user.getInfo",
                 user: user,
@@ -149,5 +173,53 @@ export class LastFMClient implements Client {
                     throw new Error("Unexpected error when fetching user info")
                 })
         })
+    }
+
+    public async scrobble(username: string, scrobbles: Scrobble[]): Promise<LastFmScrobbleResponse> {
+        const storage = getStorage("session")
+        const result = await storage.read<Session>(username)
+        if (!result.success) {
+            logger.error("LastFM: scrobble", "Failed to read session", result.error)
+            throw new Error("Failed to read session")
+        }
+        const session = result.data
+
+        const params = [
+            ["api_key", this.cfg.apiKey],
+            ["method", "track.scrobble"],
+            ["sk", session.key],
+            ...scrobbles.map((s, i) => [`artist[${i}]`, s.artist]),
+            ...scrobbles.map((s, i) => [`track[${i}]`, s.track]),
+            ...scrobbles.map((s, i) => [`timestamp[${i}]`, s.timestamp.toString()]),
+            ...scrobbles.map((s, i) => [`duration[${i}]`, (s.duration ?? 180).toString(10)]),
+        ];
+
+        const sig = this.buildApiSignature(params, this.cfg.secret)
+
+        return this.api.post<string>("/2.0/", new URLSearchParams({
+            api_sig: sig,
+            format: "xml",
+            ...Object.fromEntries(params)
+        }), {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        })
+            .then(r => {
+                const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "", parseAttributeValue: true });
+                return parser.parse(r.data) as LastFmScrobbleResponse;
+            })
+            .catch((error) => {
+                logger.error("LastFM: scrobble", error.message)
+                throw new Error("Unexpected error when scrobbling");
+            })
+    }
+
+    private buildApiSignature(params: string[][], secret: string): string {
+        const sig = params.sort()
+            .map(([key, value]) => `${key}${value}`)
+            .reduce((acc, curr) => `${acc}${curr}`, "") + secret;
+
+        return crypto.createHash('md5').update(sig).digest('hex');
     }
 }

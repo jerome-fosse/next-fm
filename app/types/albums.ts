@@ -35,6 +35,7 @@ export type Track = {
     title: string,
     duration?: number,
     artists?: Artist[],
+    extraArtists?: Artist[],
 }
 
 export type Artist = {

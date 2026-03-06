@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lfm status="ok">
+    <scrobbles ignored="2" accepted="9">
+        <scrobble>
+            <track corrected="0">Voïvod</track>
+            <artist corrected="0">Voïvod</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773324549.41</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Warriors Of Ice</track>
+            <artist corrected="0">Voïvod</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773324805.41</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Suck Your Bone</track>
+            <artist corrected="0">Voïvod</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773325109.41</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Iron Gang</track>
+            <artist corrected="0">Voïvod</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773325319.41</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">War And Pain</track>
+            <artist corrected="0">Voïvod</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773325574.41</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Blower</track>
+            <artist corrected="0">Voïvod</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773325869.41</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Live For Violence</track>
+            <artist corrected="0">Voïvod</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773326031.41</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Black City</track>
+            <artist corrected="0">Voïvod</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773326342.41</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Nuclear War</track>
+            <artist corrected="0">Voïvod</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773326650.41</timestamp>
+            <ignoredMessage code="0"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Iron Side</track>
+            <artist corrected="0">Voïvod</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773324549.41</timestamp>
+            <ignoredMessage code="1"></ignoredMessage>
+        </scrobble>
+        <scrobble>
+            <track corrected="0">Blower Side</track>
+            <artist corrected="0">Voïvod</artist>
+            <album corrected="0" />
+            <albumArtist corrected="0"></albumArtist>
+            <timestamp>1773325869.41</timestamp>
+            <ignoredMessage code="1"></ignoredMessage>
+        </scrobble>
+    </scrobbles>
+</lfm>

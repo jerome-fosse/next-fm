@@ -2,6 +2,7 @@ import {DiscogsMaster, DiscogsSearchResultItem} from "@/app/lib/data/http/discog
 import {Album, AlbumShort} from "@/app/types/albums";
 import {LastFmAlbum, LastFmAlbumInfos} from "@/app/lib/data/http/lastfm";
 import {displayTimeToSeconds} from "@/app/lib/utils/duration";
+import {logger} from "@/app/lib/utils/logger";
 
 export function discogsSearchResultItemToAlbumShort(item: DiscogsSearchResultItem): AlbumShort {
     const [artistName, albumTitle] = item.title.split(' - ')
@@ -41,9 +42,12 @@ export function discogsMasterToAlbum(item: DiscogsMaster): Album {
         position: track.position,
         title: track.title,
         duration: displayTimeToSeconds(track.duration),
-        artists: track.extraartists?.map(artist => ({
+        artists: track.artists?.map(artist => ({
             id: artist.id.toString(10), name: artist.name, roles: artist.role ?? ""
-        })) ?? '',
+        })) ?? [],
+        extraArtists: track.extraartists?.map(artist => ({
+            id: artist.id.toString(10), name: artist.name, roles: artist.role ?? ""
+        })) ?? [],
     }));
 
     const totalDuration = tracks.reduce((acc, track) => acc + track.duration, 0);
@@ -77,7 +81,7 @@ export function lastfmAlbumToAlbum(item: LastFmAlbum): Album {
         artists: [{id: track.artist.mbid, name: track.artist.name, roles: ''}],
     }))
 
-    const totalDuration = tracks.reduce((acc, track) => acc + (track.duration ?? 0), 0);
+    const totalDuration = tracks?.reduce((acc, track) => acc + (track.duration ?? 0), 0) ?? 0;
 
     return {
         id: item.id ?? '',
