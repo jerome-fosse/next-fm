@@ -1,44 +1,20 @@
-'use client'
-
 import {PiVinylRecord} from "react-icons/pi";
 import SearchAlbumsForm from "@/app/ui/dashboard/search-albums-form";
-import {useActionState, useCallback, useEffect, useRef, useTransition} from "react";
-import {searchAlbumsAction, SearchAlbumsState} from "@/app/lib/actions/album";
-import SearchAlbumsResult from "@/app/ui/dashboard/search-albums-result";
-import AlertDialog from "@/app/ui/common/alert-dialog";
+import SearchAlbumsLoader from "@/app/ui/dashboard/search-albums-loader";
+import {searchSchema} from "@/app/lib/queries/album";
 
-export default function Page() {
-    const initialState: SearchAlbumsState = {
-        query: "",
-        searchApi: "",
-        albums: undefined,
-        pagination: undefined
-    }
-    const [state, formAction] = useActionState(searchAlbumsAction, initialState)
-    const [isPending, startTransition] = useTransition();
-    const errorModal = useRef<HTMLDialogElement>(null);
+export default async function Page({searchParams}: { searchParams: Promise<Record<string, string>> }) {
+    const parsed = searchSchema.safeParse(await searchParams);
 
-    useEffect(() => {
-        if (state.error) errorModal.current?.showModal();
-    }, [state.error]);
-
-    const changePage = useCallback((page: number) => {
-        startTransition(() => {
-            const formData = new FormData();
-            formData.append('query', state.query);
-            formData.append('searchapi', state.searchApi);
-            formData.append('page', page.toString());
-
-            formAction(formData);
-        });
-    }, [state.query, state.searchApi])
+    const query = parsed.success ? parsed.data.query : undefined;
+    const searchApi = parsed.success ? parsed.data.searchapi : undefined;
+    const page = parsed.success ? parsed.data.page : 1;
 
     return (
         <div className="flex flex-col w-full h-full">
             <div className="flex text-4xl mb-8"><PiVinylRecord className="mr-4"/>Scrobbler des albums...</div>
-            <SearchAlbumsForm defaultQuery={state.query} formAction={formAction}/>
-            <SearchAlbumsResult key={`${state.query}_${state.pagination?.page}`} className="flex-1 min-h-0 mt-4" albums={state.albums} pagination={state.pagination} pending={isPending} onChangePage={changePage}/>
-            <AlertDialog ref={errorModal} message={state.error ?? ''} />
+            <SearchAlbumsForm defaultQuery={query} defaultApi={searchApi}/>
+            {query && searchApi && <SearchAlbumsLoader query={query} searchApi={searchApi} page={page}/>}
         </div>
     )
 }
