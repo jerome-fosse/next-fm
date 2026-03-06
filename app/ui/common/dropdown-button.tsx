@@ -12,7 +12,8 @@ type Props = {
     text?: string
     icon?: IconType
     vMenuPosition?: "top" | "bottom",
-    items: DropDownButtonItem[]
+    items: DropDownButtonItem[],
+    defaultValue?: string,
 }
 
 export type DropDownButtonItem = {
@@ -24,13 +25,13 @@ export type DropDownButtonItem = {
     default?: boolean
 }
 
-export default function DropDownButton({name = "dropdown-button", type = "button", text = "Button", vMenuPosition = "bottom", icon, items}: Props) {
+export default function DropDownButton({name = "dropdown-button", type = "button", text = "Button", vMenuPosition = "bottom", icon, items, defaultValue}: Props) {
     const ButtonIcon = icon;
-    const textButton = items.filter(item => item.default == true)
-        .map(item => item.textButton)
-        .shift() ?? text;
-    const [label, setLabel] = useState(textButton)
-    const [value, setValue] = useState(items[0].textMenuItem)
+    const defaultItem = defaultValue
+        ? items.find(item => item.textMenuItem === defaultValue)
+        : items.find(item => item.default);
+    const [label, setLabel] = useState(defaultItem?.textButton ?? text)
+    const [value, setValue] = useState(defaultValue ?? items[0].textMenuItem)
 
     return (
         <div className="join join-horizontal btn btn-secondary rounded-md m-0 p-0 border-none bg-transparent gap-0 z-50">

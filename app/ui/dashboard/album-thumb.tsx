@@ -1,3 +1,5 @@
+'use client'
+
 import {AlbumShort} from "@/app/types/albums";
 import Image from "next/image";
 import {SiDiscogs} from "react-icons/si";

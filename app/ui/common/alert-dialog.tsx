@@ -1,14 +1,22 @@
-import { RefObject } from "react";
+'use client'
+
+import { useEffect, useRef } from "react";
 import { MdErrorOutline } from "react-icons/md";
 
 type Props = {
     message: string;
-    ref: RefObject<HTMLDialogElement | null>;
+    onCloseAction?: () => void;
 };
 
-export default function AlertDialog({ message, ref }: Props) {
+export default function AlertDialog({ message, onCloseAction }: Props) {
+    const ref = useRef<HTMLDialogElement>(null);
+
+    useEffect(() => {
+        ref.current?.showModal();
+    }, []);
+
     return (
-        <dialog ref={ref} className="modal">
+        <dialog ref={ref} onClose={onCloseAction} className="modal">
             <div className="modal-box">
                 <form method="dialog">
                     <button className="btn btn-sm btn-circle btn-ghost border-none absolute right-2 top-2">✕</button>
