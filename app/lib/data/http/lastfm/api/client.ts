@@ -2,7 +2,6 @@ import axios, {AxiosInstance} from "axios";
 import {
     AlbumInfoParams,
     LastFmAlbumSearchResponse,
-    LastFmErrorResponse,
     LastFmGetAlbumInfoResponse,
     LastFmGetSessionResponse,
     LastFmUserGetInfoResponse,

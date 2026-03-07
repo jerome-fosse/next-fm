@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { Storage } from '@/app/lib/data/storage';
-import { Option, some, none } from 'fp-ts/Option';
+import {NOT_FOUND, ReadResult, Storage, WriteResult} from '@/app/lib/data/storage';
+import {logger} from "@/app/lib/utils/logger";
 
 function isFileDoesNotExistError(error: unknown): error is NodeJS.ErrnoException {
     return error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT';
@@ -10,27 +10,32 @@ function isFileDoesNotExistError(error: unknown): error is NodeJS.ErrnoException
 export class FsStorage implements Storage {
     constructor(private readonly basePath: string) {}
 
-    async write(filename: string, data: string): Promise<void> {
-        const absolutePath = path.resolve(process.cwd(), this.basePath);
-        await fs.mkdir(absolutePath, { recursive: true });
-        await fs.writeFile(
-            path.join(absolutePath, `${filename}.json`),
-            data
-        );
+    async write(filename: string, data: string): Promise<WriteResult> {
+        try {
+            const absolutePath = path.resolve(process.cwd(), this.basePath);
+            await fs.mkdir(absolutePath, {recursive: true});
+            await fs.writeFile(path.join(absolutePath, `${filename}.json`), data);
+            return { success: true};
+        } catch (error) {
+            const message = `Erreur lors de l'écriture du fichier ${filename}.json${error instanceof Error ? ': ' + error.message : '.'}`;
+            logger.error(message);
+            return { success: false, error: message };
+        }
     }
 
-    async read<T>(filename: string): Promise<Option<T>> {
+    async read<T>(filename: string): Promise<ReadResult<T>> {
         try {
             const absolutePath = path.resolve(process.cwd(), this.basePath);
             const content = await fs.readFile(
                 path.join(absolutePath, `${filename}.json`),
                 'utf-8'
             );
-            const parsed = JSON.parse(content) as T;
-            return some(parsed);
+            return  { success: true, data: JSON.parse(content) as T };
         } catch (error) {
-            if (isFileDoesNotExistError(error)) return none;
-            throw error;
+            const message = `Erreur lors de la lecture du fichier ${filename}.json${error instanceof Error ? ': ' + error.message : '.'}`;
+            const type = isFileDoesNotExistError(error) ? NOT_FOUND : 'UNKNOWN';
+            logger.error(message);
+            return { success: false, errorType: type, error: message };
         }
     }
 }

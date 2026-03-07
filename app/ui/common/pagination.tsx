@@ -17,7 +17,6 @@ type Props = {
     onChangePage: (page: number) => void
 }
 
-//export default function PaginationControl({
 const PaginationControl= memo(function PaginationControl({
                                        pages,
                                        page,
@@ -31,8 +30,6 @@ const PaginationControl= memo(function PaginationControl({
                                        nextLabel = ">",
                                        onChangePage
                                    }: Props) {
-
-    logger.debug("PaginationControl Params:", "pages=", pages, "page=", page, "showFirst=", showFirst, "showLast=", showLast, "showPrev=", showPrev, "showNext=", showNext, "firstLabel=", firstLabel, "lastLabel=", lastLabel, "prevLabel=", prevLabel, "nextLabel=", nextLabel);
 
     function changePage(page: number) {
         onChangePage(page);

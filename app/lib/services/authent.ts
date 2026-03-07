@@ -5,7 +5,6 @@ import {Session, User} from "@/app/types/authent";
 import {lastFmUserToUser} from "@/app/lib/services/mapper/authent";
 import {logger} from "@/app/lib/utils/logger";
 import {getStorage} from "@/app/lib/data/storage";
-import {isSome, none, Option, some} from "fp-ts/Option";
 import {cookies} from "next/headers";
 import {sessionCookieSchema} from "@/app/schemas/authent";
 import config from "@/app/config";
@@ -26,19 +25,20 @@ export async function getOrCreateSession(token: string): Promise<Session> {
     const { name, key, subscriber } = response.session;
 
     const storage = getStorage('session');
-    const optSession = await storage.read<Session>(name);
+    const result = await storage.read<Session>(name);
+    const session = result.success ?
+        { ...result.data, key, subscriber } :
+        { user: name, key, subscriber, createdAt: new Date().toISOString() };
 
-    const now = new Date().toISOString();
-    const session: Session = isSome(optSession)
-        ? { ...optSession.value, key, subscriber }
-        : { user: name, key, subscriber, createdAt: now };
-
-    await storage.write(session.user, JSON.stringify(session));
-    logger.debug(`Session ${session.user} created.`);
+    const sessionSaved = await storage.write(session.user, JSON.stringify(session));
+    if (sessionSaved.success) {
+        logger.info(`Session ${session.user} ${result.success ? 'mise à jour' : 'créée'}.`);
+    } else {
+        logger.warn(`Session ${session.user} non sauvegardée : ${sessionSaved.error}`);
+    }
 
     return session;
 }
-
 
 export async function getUserInfos(user: string): Promise<User> {
     logger.info(`getUserInfos for user ${user}`);
@@ -60,16 +60,14 @@ export async function getUserInfos(user: string): Promise<User> {
         });
 }
 
-export async function getConnectedUserInfos(): Promise<Option<User>> {
+export async function getConnectedUserInfos(): Promise<User | undefined> {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('nextfm-session');
     const parsed = sessionCookieSchema.safeParse(JSON.parse(sessionCookie?.value ?? '{}'));
 
     if (!parsed.success) {
-        return none;
+        return;
     }
 
-    const user = await getUserInfos(parsed.data.username);
-
-    return some(user);
+    return await getUserInfos(parsed.data.username);
 }
