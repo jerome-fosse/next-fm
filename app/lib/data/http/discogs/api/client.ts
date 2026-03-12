@@ -4,9 +4,8 @@ import {
     DiscogsSearchParams,
     DiscogsSearchResponse
 } from "@/app/lib/data/http/discogs/model/types";
-import axios, {AxiosInstance, AxiosResponse} from "axios";
+import axios, {AxiosInstance} from "axios";
 import {logger} from "@/app/lib/utils/logger";
-import {match} from "ts-pattern";
 
 export type DiscogsConfiguration = {
     token: string,
@@ -56,13 +55,11 @@ export class DiscogsClient implements Client {
             .then(r => r.data)
             .catch((error) => {
                 logger.error("Discogs: Error fetching master: ", `id=${id}`, `error=${error}`);
-                return match(error)
-                    .when(() => (axios.isAxiosError(error) && error.response?.status === 404), () => {
-                        throw new Error(`Master with id ${id} not found`)
-                    })
-                    .otherwise(() => {
-                        throw new Error(`Unexpected error when fetching master with id ${id}`)
-                    });
+                if (axios.isAxiosError(error) && error.response?.status === 404) {
+                    throw new Error(`Master with id ${id} not found`)
+                } else {
+                    throw new Error(`Unexpected error when fetching master with id ${id}`)
+                }
             });
     }
 
@@ -71,13 +68,11 @@ export class DiscogsClient implements Client {
             .then(r => r.data)
             .catch((error) => {
                 logger.error("Discogs: Error fetching release: ", `id=${id}`, `error=${error}`);
-                return match(error)
-                    .when(() => axios.isAxiosError(error) && error.response?.status === 404, () => {
-                        throw new Error(`Release with id ${id} not found`)
-                    })
-                    .otherwise(() => {
-                        throw new Error(`Unexpected error when fetching release with id ${id}`)
-                    });
+                if (axios.isAxiosError(error) && error.response?.status === 404) {
+                    throw new Error(`Release with id ${id} not found`)
+                } else {
+                    throw new Error(`Unexpected error when fetching release with id ${id}`)
+                }
             });
     }
 }

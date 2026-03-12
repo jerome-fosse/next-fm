@@ -15,5 +15,4 @@
 - **Server Components** by default, `'use client'` pushed as low as possible in the tree.
 - **Slot pattern** to pass Server Components through Client Components.
 - **Storage** configured via `STORAGE_*` environment variables (see `.env.development`).
-- **Pattern matching** with `ts-pattern` instead of `if/else` or `switch/case` when it makes sense.
 - **Promises** `.then()/.catch()` rather than `try/catch` blocks for async calls.

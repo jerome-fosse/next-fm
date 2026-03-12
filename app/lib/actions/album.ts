@@ -6,7 +6,6 @@ import {DISCOGS, LASTFM, Origin, ORIGINS} from "@/app/types/common";
 import {fetchLastfmAlbumByIdOrNameAndArtist} from "@/app/lib/services/lastfm";
 import {logger} from "@/app/lib/utils/logger";
 import {z} from "zod";
-import {match} from "ts-pattern";
 
 export type FetchAlbumParams = {
     id?: string,
@@ -16,8 +15,8 @@ export type FetchAlbumParams = {
 }
 
 export type FetchAlbumResult =
-    | { album: Album; error?: never }
-    | { album?: never; error: string }
+    | { success: true, album: Album }
+    | { success: false, error: string }
 
 export async function fetchAlbumAction(params: FetchAlbumParams): Promise<FetchAlbumResult> {
     logger.debug("fetchAlbumAction:", "params=", params);
@@ -43,26 +42,20 @@ export async function fetchAlbumAction(params: FetchAlbumParams): Promise<FetchA
     });
     if (!parsed.success) {
         logger.error("Paramètres d'album invalides:", parsed.error.message);
-        return {error: "Les parametres d'album sont invalides."};
-    }
-
-    type Params = z.infer<typeof schema>
-    const handleDiscogs = async (params: Params) => {
-        if (!params.idDiscogs) {
-            return {error: "L'id est obligatoire pour Discogs."};
-        }
-        return {album: await fetchDiscogsMasterReleaseById(params.idDiscogs)};
-    }
-    const handleLastfm = async (params: Params) => {
-        return {album: await fetchLastfmAlbumByIdOrNameAndArtist(params.idLastfm, params.title, params.artist)};
+        return {success: false, error: "Les parametres d'album sont invalides."};
     }
 
     try {
-        return match(parsed.data.origin)
-            .with(DISCOGS, async () => handleDiscogs(parsed.data))
-            .with(LASTFM, async () => handleLastfm(parsed.data))
-            .exhaustive();
+        switch (parsed.data.origin) {
+            case DISCOGS:
+                if (!parsed.data.idDiscogs) {
+                    return {success: false, error: "L'id est obligatoire pour Discogs."};
+                }
+                return {success: true, album: await fetchDiscogsMasterReleaseById(parsed.data.idDiscogs)};
+            case LASTFM:
+                return {success: true, album: await fetchLastfmAlbumByIdOrNameAndArtist(parsed.data.idLastfm, parsed.data.title, parsed.data.artist)};
+        }
     } catch (error) {
-        return {error: error instanceof Error ? error.message : "Une erreur inattendue s'est produite."};
+        return {success: false, error: error instanceof Error ? error.message : "Une erreur inattendue s'est produite."};
     }
 }

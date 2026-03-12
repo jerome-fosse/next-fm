@@ -6,9 +6,8 @@ import {Album, AlbumShort} from "@/app/types/albums";
 import PaginationControl from "@/app/ui/common/pagination";
 import {useRef, useState, useTransition} from "react";
 import {useRouter} from "next/navigation";
-import {fetchAlbumAction} from "@/app/lib/actions/album";
+import {fetchAlbumAction, FetchAlbumResult} from "@/app/lib/actions/album";
 import AlertDialog from "@/app/ui/common/alert-dialog";
-import {match, P} from "ts-pattern";
 import AlbumDialog from "@/app/ui/dashboard/album-dialog";
 
 export type Props = {
@@ -40,15 +39,23 @@ export default function SearchAlbumsResult({className, albums, pagination, query
 
     const handleShowAlbum = (album: AlbumShort) => {
         startTransition(async () => {
-            const data = await match(album.origin)
-                .with(DISCOGS, () => fetchAlbumAction({id: album.id, origin: album.origin}))
-                .with(LASTFM, () => fetchAlbumAction({id: album.id, title: album.title, artist: album.artist.name, origin: album.origin}))
-                .exhaustive();
+            let data: FetchAlbumResult;
+            switch(album.origin) {
+                case DISCOGS:
+                    data = await fetchAlbumAction({id: album.id, origin: album.origin});
+                    break;
+                case LASTFM:
+                    data = await fetchAlbumAction({id: album.id, title: album.title, artist: album.artist.name, origin: album.origin});
+                    break;
+            }
 
-            match(data)
-                .with({error: P.string}, (result) => {setError(result.error); setSelectedAlbum(null)})
-                .with({error: P.optional(undefined)}, (result) => {setSelectedAlbum(result.album); setError(null)})
-                .exhaustive();
+            if (data.success) {
+                setSelectedAlbum(data.album);
+                setError(null);
+            } else {
+                setError(data.error);
+                setSelectedAlbum(null);
+            }
         })
     }
 

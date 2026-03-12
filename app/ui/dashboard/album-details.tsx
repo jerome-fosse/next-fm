@@ -3,10 +3,9 @@
 import {memo, useState} from "react";
 import {Album} from "@/app/types/albums";
 import Image from "next/image";
-import {DISCOGS, LASTFM} from "@/app/types/common";
+import {DISCOGS} from "@/app/types/common";
 import {displayTimeToSeconds, secondsToDisplayTime} from "@/app/lib/utils/duration";
 import EditableText from "@/app/ui/common/editable-text";
-import {match} from "ts-pattern";
 import {logger} from "@/app/lib/utils/logger";
 
 type Props = {
@@ -27,10 +26,9 @@ const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
         setDurations(newDurations);
     }
 
-    const url = match(album.origin)
-        .with(DISCOGS, () => album.images?.filter(image => image.type === 'primary').at(0)?.uri ?? "/images/image-not-found.png")
-        .with(LASTFM, () => album.images?.filter(image => image.size === 'large').at(0)?.uri ?? "/images/image-not-found.png")
-        .exhaustive();
+    const url = album.origin === DISCOGS ?
+        album.images?.filter(image => image.type === 'primary').at(0)?.uri ?? "/images/image-not-found.png" :
+        album.images?.filter(image => image.size === 'large').at(0)?.uri ?? "/images/image-not-found.png";
 
     return (
         <div className={`flex flex-col space-y-2 ${className ?? ''}`}>

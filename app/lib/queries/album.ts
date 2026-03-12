@@ -1,8 +1,7 @@
 import {searchDiscogsAlbums} from "@/app/lib/services/discogs";
 import {searchLastfmAlbums} from "@/app/lib/services/lastfm";
-import {DISCOGS, LASTFM, ORIGINS, type Origin, type Pagination} from "@/app/types/common";
+import {DISCOGS, LASTFM, type Origin, ORIGINS, type Pagination} from "@/app/types/common";
 import type {AlbumShort} from "@/app/types/albums";
-import {match} from "ts-pattern";
 import {z} from "zod";
 import {logger} from "@/app/lib/utils/logger";
 
@@ -17,12 +16,15 @@ export const searchSchema = z.object({
 });
 
 export async function searchAlbums(query: string, searchApi: Origin, page: number): Promise<SearchResult> {
-    return match(searchApi)
-        .with(DISCOGS, () => searchDiscogsAlbums(query, page))
-        .with(LASTFM, () => searchLastfmAlbums(query, page))
-        .exhaustive()
-        .catch((e): SearchResult => {
-            logger.error("Erreur lors de la recherche:", e);
-            return {error: e instanceof Error ? e.message : "Une erreur inattendue s'est produite."};
-        });
+    try {
+        switch (searchApi) {
+            case DISCOGS:
+                return searchDiscogsAlbums(query, page);
+            case LASTFM:
+                return searchLastfmAlbums(query, page);
+        }
+    } catch (e) {
+        logger.error("Erreur lors de la recherche:", e);
+        return {error: e instanceof Error ? e.message : "Une erreur inattendue s'est produite."};
+    }
 }

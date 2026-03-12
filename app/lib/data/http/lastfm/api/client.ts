@@ -10,7 +10,6 @@ import {
     SearchParams
 } from "@/app/lib/data/http/lastfm/model/types";
 import crypto from "crypto";
-import {match} from "ts-pattern";
 import {logger} from "@/app/lib/utils/logger";
 import {getStorage} from "@/app/lib/data/storage";
 import {Session} from "@/app/types/authent";
@@ -62,18 +61,13 @@ export class LastFMClient implements Client {
         })
         .then(r => r.data)
         .catch((error) => {
-            return match(error)
-                .when(
-                    (e) => axios.isAxiosError(e) && e.response?.data.message,
-                    (e) => {
-                        logger.error("LastFM: search", e.response!.data)
-                        throw new Error(e.response!.data.message)
-                    }
-                )
-                .otherwise(() => {
-                    logger.error("LastFM: search", "Unexpected error when fetching search results", error)
-                    throw new Error("Unexpected error when fetching search results")
-                })
+            if (axios.isAxiosError(error) && error.response?.data.message) {
+                logger.error("LastFM: search", error.response!.data)
+                throw new Error(error.response.data.message)
+            } else {
+                logger.error("LastFM: search", "Unexpected error when fetching search results", error)
+                throw new Error("Unexpected error when fetching search results")
+            }
         })
     }
 
@@ -92,18 +86,13 @@ export class LastFMClient implements Client {
         })
         .then(r => r.data)
         .catch((error) => {
-            return match(error)
-                .when(
-                    (e) => axios.isAxiosError(e) && e.response?.data.message,
-                    (e) => {
-                        logger.error("LastFM: getAlbumInfo", e.response!.data)
-                        throw new Error(e.response!.data.message)
-                    }
-                )
-                .otherwise(() => {
-                    logger.error("LastFM: getAlbumInfo", error)
-                    throw new Error("Unexpected error when fetching album info")
-                })
+            if (axios.isAxiosError(error) && error.response?.data.message) {
+                logger.error("LastFM: getAlbumInfo", error.response!.data)
+                throw new Error(error.response.data.message)
+            } else {
+                logger.error("LastFM: getAlbumInfo", error)
+                throw new Error("Unexpected error when fetching album info")
+            }
         })
     }
 
@@ -130,18 +119,13 @@ export class LastFMClient implements Client {
         })
         .then(r => r.data)
         .catch((error) => {
-            return match(error)
-                .when(
-                    (e) => axios.isAxiosError(e) && e.response?.data.message,
-                    (e) => {
-                        logger.error("LastFM: getSession", e.response!.data)
-                        throw new Error(e.response!.data.message)
-                    }
-                )
-                .otherwise(() => {
-                    logger.error("LastFM: getSession", "Unexpected error when fetching session", error)
-                    throw new Error("Unexpected error when fetching session")
-                })
+            if (axios.isAxiosError(error) && error.response?.data.message) {
+                logger.error("LastFM: getSession", error.response.data)
+                throw new Error(error.response.data.message)
+            } else {
+                logger.error("LastFM: getSession", "Unexpected error when fetching session", error)
+                throw new Error("Unexpected error when fetching session")
+            }
         })
     }
 
@@ -160,18 +144,13 @@ export class LastFMClient implements Client {
         })
         .then(r => r.data)
         .catch((error) => {
-            return match(error)
-                .when(
-                    (e) => axios.isAxiosError(e) && e.response?.data.message,
-                    (e) => {
-                        logger.error("LastFM: getUserInfo", e.response!.data)
-                        throw new Error(e.response!.data.message)
-                    }
-                )
-                .otherwise(() => {
-                    logger.error("LastFM: getUserInfo", "Unexpected error when fetching user info", error)
-                    throw new Error("Unexpected error when fetching user info")
-                })
+            if (axios.isAxiosError(error) && error.response?.data.message) {
+                logger.error("LastFM: getUserInfo", error.response!.data)
+                throw new Error(error.response.data.message)
+            } else {
+                logger.error("LastFM: getUserInfo", "Unexpected error when fetching user info", error)
+                throw new Error("Unexpected error when fetching user info")
+            }
         })
     }
 
