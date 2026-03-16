@@ -23,7 +23,7 @@ export default async function Page() {
                 </div>
                 <div className="flex flex-col gap-4">
                     {session.lastAlbums && <section className="flex flex-col gap-2">
-                        <h2 className="font-bold">Derniers albums scrobblés</h2>
+                        <h2 className="font-bold">Derniers albums consultés</h2>
                         <div className="flex flex-wrap border border-gray-300 rounded-md shadow-md">
                             {session.lastAlbums.map((album, i) => (
                                 <AlbumThumbnail key={`last-album-${i}`} album={album} showOriginButton={false} />

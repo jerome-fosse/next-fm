@@ -87,7 +87,6 @@ const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
                             </div>
                         </div>
                     }
-                    <div className="flex-2"></div>
                 </div>
             </div>
             {album.tracks && album.tracks.length > 0 && (

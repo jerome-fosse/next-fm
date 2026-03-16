@@ -2,7 +2,7 @@ import {Album, AlbumShort, Image} from "@/app/types/albums";
 
 export function albumToAlbumShort(album: Album): AlbumShort {
     const images = album.images
-        ?.toSorted((a, b) => a.type === 'primary' ? -1 : 1)
+        ?.toSorted((a, b) => a.type === 'primary' || a.size === 'large' ? -1 : 1)
         .slice(0, 1)
         .map((image) => ({
             size: "large",

@@ -58,5 +58,5 @@ export async function addSearchedAlbumToCurrentSession(albumToAdd: AlbumShort): 
 }
 
 function isSameAlbum(a1: AlbumShort, a2: AlbumShort): boolean {
-    return a1.origin === a2.origin && ((a1.id === a2.id) || (a1.title === a2.title && a1.artist === a2.artist));
+    return a1.origin === a2.origin && a1.id === a2.id && a1.title === a2.title && a1.artist.name === a2.artist.name;
 }

@@ -2,6 +2,7 @@ import {DiscogsMaster, DiscogsSearchResultItem} from "@/app/lib/data/http/discog
 import {Album, AlbumShort} from "@/app/types/albums";
 import {LastFmAlbum, LastFmAlbumInfos, LastFmTag, LastFmTrack} from "@/app/lib/data/http/lastfm";
 import {displayTimeToSeconds} from "@/app/lib/utils/duration";
+import {logger} from "@/app/lib/utils/logger";
 
 export function discogsSearchResultItemToAlbumShort(item: DiscogsSearchResultItem): AlbumShort {
     const [artistName, albumTitle] = item.title.split(' - ')
@@ -61,7 +62,7 @@ export function discogsMasterToAlbum(item: DiscogsMaster): Album {
         styles: item.styles,
         year: item.year,
         artists: item.artists.map(artist => ({
-            id: artist.id.toString(10), name: artist.name, roles: artist.role ?? ""
+            id: artist.id.toString(10), name: normalizeArtistName(artist.name), roles: artist.role ?? ""
         })),
         tracks: tracks,
         images: item.images.map(image => ({
