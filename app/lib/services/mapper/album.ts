@@ -1,8 +1,7 @@
 import {DiscogsMaster, DiscogsSearchResultItem} from "@/app/lib/data/http/discogs";
 import {Album, AlbumShort} from "@/app/types/albums";
-import {LastFmAlbum, LastFmAlbumInfos} from "@/app/lib/data/http/lastfm";
+import {LastFmAlbum, LastFmAlbumInfos, LastFmTag, LastFmTrack} from "@/app/lib/data/http/lastfm";
 import {displayTimeToSeconds} from "@/app/lib/utils/duration";
-import {logger} from "@/app/lib/utils/logger";
 
 export function discogsSearchResultItemToAlbumShort(item: DiscogsSearchResultItem): AlbumShort {
     const [artistName, albumTitle] = item.title.split(' - ')
@@ -38,15 +37,17 @@ export function lastfmSearchResultItemToAlbumShort(item: LastFmAlbumInfos): Albu
 }
 
 export function discogsMasterToAlbum(item: DiscogsMaster): Album {
+    const normalizeArtistName = (name: string) => name.replace(/\s*\(\d+\)$/, "");
+
     const tracks = item.tracklist.map(track => ({
         position: track.position,
         title: track.title,
         duration: displayTimeToSeconds(track.duration),
         artists: track.artists?.map(artist => ({
-            id: artist.id.toString(10), name: artist.name, roles: artist.role ?? ""
+            id: artist.id.toString(10), name: normalizeArtistName(artist.name), roles: artist.role ?? ""
         })) ?? [],
         extraArtists: track.extraartists?.map(artist => ({
-            id: artist.id.toString(10), name: artist.name, roles: artist.role ?? ""
+            id: artist.id.toString(10), name: normalizeArtistName(artist.name), roles: artist.role ?? ""
         })) ?? [],
     }));
 
@@ -74,20 +75,40 @@ export function discogsMasterToAlbum(item: DiscogsMaster): Album {
 }
 
 export function lastfmAlbumToAlbum(item: LastFmAlbum): Album {
-    const tracks = item.tracks?.track.map(track => ({
-        position: track["@attr"].rank.toString(10),
-        title: track.name,
-        duration: track.duration ?? undefined,
-        artists: [{id: track.artist.mbid, name: track.artist.name, roles: ''}],
-    }))
+    const mapTagsToStringArray = (tags: LastFmTag[] | LastFmTag) => {
+        if (Array.isArray(tags)) {
+            return tags.map(tag => tag.name);
+        } else {
+            return [tags?.name];
+        }
+    }
 
+    const mapLastFmTracksToTracks = (tracks: LastFmTrack[] | LastFmTrack) => {
+        if (Array.isArray(tracks)) {
+            return tracks.map(track => ({
+                position: track["@attr"].rank.toString(10),
+                title: track.name,
+                duration: track.duration ?? undefined,
+                artists: [{id: track.artist.mbid, name: track.artist.name, roles: ''}],
+            }))
+        } else {
+            return [{
+                position: tracks["@attr"].rank.toString(10),
+                title: tracks.name,
+                duration: tracks.duration ?? undefined,
+                artists: [{id: tracks.artist.mbid, name: tracks.artist.name, roles: ''}],
+            }]
+        }
+    }
+
+    const tracks = mapLastFmTracksToTracks(item.tracks.track);
     const totalDuration = tracks?.reduce((acc, track) => acc + (track.duration ?? 0), 0) ?? 0;
 
     return {
         id: item.id ?? '',
         title: item.name,
         origin: "Last.fm",
-        tags: item.tags.tag?.map(tag => tag.name),
+        tags: mapTagsToStringArray(item.tags.tag),
         released: item.releasedate,
         artists: [{id: '', name: item.artist, roles: ''}],
         tracks: tracks,

@@ -6,6 +6,8 @@ import {DISCOGS, LASTFM, Origin, ORIGINS} from "@/app/types/common";
 import {fetchLastfmAlbumByIdOrNameAndArtist} from "@/app/lib/services/lastfm";
 import {logger} from "@/app/lib/utils/logger";
 import {z} from "zod";
+import {addSearchedAlbumToCurrentSession} from "@/app/lib/services/session";
+import {albumToAlbumShort} from "@/app/types/mapper/album";
 
 export type FetchAlbumParams = {
     id?: string,
@@ -46,15 +48,22 @@ export async function fetchAlbumAction(params: FetchAlbumParams): Promise<FetchA
     }
 
     try {
+        let album: Album;
         switch (parsed.data.origin) {
             case DISCOGS:
                 if (!parsed.data.idDiscogs) {
                     return {success: false, error: "L'id est obligatoire pour Discogs."};
                 }
-                return {success: true, album: await fetchDiscogsMasterReleaseById(parsed.data.idDiscogs)};
+                album = await fetchDiscogsMasterReleaseById(parsed.data.idDiscogs);
+                break;
             case LASTFM:
-                return {success: true, album: await fetchLastfmAlbumByIdOrNameAndArtist(parsed.data.idLastfm, parsed.data.title, parsed.data.artist)};
+                album = await fetchLastfmAlbumByIdOrNameAndArtist(parsed.data.idLastfm, parsed.data.title, parsed.data.artist);
+                break;
         }
+
+        await addSearchedAlbumToCurrentSession(albumToAlbumShort(album));
+
+        return {success: true, album};
     } catch (error) {
         return {success: false, error: error instanceof Error ? error.message : "Une erreur inattendue s'est produite."};
     }

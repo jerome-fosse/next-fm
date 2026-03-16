@@ -23,7 +23,7 @@ vi.mock("@/app/lib/data/http/lastfm/api/client", () => ({
 }))
 
 const mockGetConnectedUserName = vi.hoisted(() => vi.fn());
-vi.mock("@/app/lib/services/authent", () => ({
+vi.mock("@/app/lib/services/session", () => ({
     getConnectedUserName: mockGetConnectedUserName
 }));
 

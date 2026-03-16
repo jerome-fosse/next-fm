@@ -1,7 +1,9 @@
-import {cookies} from 'next/headers';
 import {requestAuthorizationFromLastFM} from '@/app/lib/actions/authent';
-import {PiHeadphones, PiWaveform, PiChartBar, PiShareNetwork} from 'react-icons/pi';
+import {PiChartBar, PiHeadphones, PiShareNetwork, PiWaveform} from 'react-icons/pi';
 import Logo from "@/app/ui/common/logo";
+import {getCurrentSession} from "@/app/lib/services/session";
+import Image from "next/image";
+import AlbumThumbnail from "@/app/ui/dashboard/album-thumb";
 
 const features = [
     { icon: PiHeadphones,   title: 'Écoutez',    description: 'Recherchez vos albums via Discogs ou Last.fm' },
@@ -11,8 +13,7 @@ const features = [
 ];
 
 export default async function Page() {
-    const cookieStore = await cookies();
-    const session = cookieStore.get('nextfm-session');
+    const session = await getCurrentSession();
 
     if (session) {
         return (
@@ -21,20 +22,14 @@ export default async function Page() {
                     <Logo size="large" slogan={true} />
                 </div>
                 <div className="flex flex-col gap-4">
-                    <section className="flex flex-col gap-2">
+                    {session.lastAlbums && <section className="flex flex-col gap-2">
                         <h2 className="font-bold">Derniers albums scrobblés</h2>
-                        <div className="border border-gray-300 rounded-md shadow-md p-4">
-                            <div className="flex gap-4">
-                                {Array.from({ length: 10 }).map((_, i) => (
-                                    <div key={i} className="flex flex-col gap-2 animate-pulse">
-                                        <div className="w-20 h-20 bg-base-300 rounded-md" />
-                                        <div className="w-20 h-2 bg-base-300 rounded" />
-                                        <div className="w-14 h-2 bg-base-300 rounded" />
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="flex flex-wrap border border-gray-300 rounded-md shadow-md">
+                            {session.lastAlbums.map((album, i) => (
+                                <AlbumThumbnail key={`last-album-${i}`} album={album} showOriginButton={false} />
+                            ))}
                         </div>
-                    </section>
+                    </section>}
                     <section className="flex flex-col gap-2">
                         <h2 className="font-bold">Top artistes</h2>
                         <div className="border border-gray-300 rounded-md shadow-md p-4">

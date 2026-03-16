@@ -64,14 +64,16 @@ export type LastFmAlbum = {
     playcount: string,
     image: LastFmImage[],
     tracks: {
-        track: LastFmTrack[],
+        track: LastFmTrack[] | LastFmTrack,
     },
     tags: {
-        tag: {
-            url: string,
-            name: string,
-        }[],
+        tag: LastFmTag[] | LastFmTag
     },
+}
+
+export type LastFmTag = {
+    url: string,
+    name: string,
 }
 
 export type LastFmTrack = {

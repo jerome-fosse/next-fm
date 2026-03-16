@@ -8,7 +8,7 @@ import config from "@/app/config";
 import {LRUCache} from "lru-cache";
 import {lastfmScrobbleResponseToScrobbleReport} from "@/app/lib/services/mapper/scrobble";
 import {ScrobbleReport} from "@/app/types/scrobble";
-import {getConnectedUserName} from "@/app/lib/services/authent";
+import {getConnectedUserName} from "@/app/lib/services/session";
 
 const api = lastfm.createClientWithDefaultConfig();
 const searchAlbumsPageSize = config.lastfm.searchPageSize;
@@ -56,7 +56,7 @@ export async function searchLastfmAlbums(query: string, page: number = 1): Promi
 }
 
 export async function fetchLastfmAlbumByIdOrNameAndArtist(id: string = '', title: string = '', artist: string = ''): Promise<Album> {
-    logger.debug("Last.fm: Fetching album by id: ", "id=", id, "title=", title, "artist=", artist);
+    logger.debug(`Last.fm: Fetching album by ${id ? `id=${id}, ` : ''}${title ? `title=${title}, ` : ''}${artist ? `artist=${artist}` : ''}`);
 
     const key = id !== '' && id != null ? id : `${artist}-${title}`;
 

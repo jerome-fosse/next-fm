@@ -5,10 +5,9 @@ import {Session, User} from "@/app/types/authent";
 import {lastFmUserToUser} from "@/app/lib/services/mapper/authent";
 import {logger} from "@/app/lib/utils/logger";
 import {getStorage} from "@/app/lib/data/storage";
-import {cookies} from "next/headers";
-import {sessionCookieSchema} from "@/app/schemas/authent";
 import config from "@/app/config";
 import {LRUCache} from "lru-cache";
+import {getConnectedUserName} from "@/app/lib/services/session";
 
 const api = lastfm.createClientWithDefaultConfig();
 
@@ -30,7 +29,7 @@ export async function getOrCreateSession(token: string): Promise<Session> {
         { ...result.data, key, subscriber } :
         { user: name, key, subscriber, createdAt: new Date().toISOString() };
 
-    const sessionSaved = await storage.write(session.user, JSON.stringify(session));
+    const sessionSaved = await storage.write<Session>(session.user, session);
     if (sessionSaved.success) {
         logger.info(`Session ${session.user} ${result.success ? 'mise à jour' : 'créée'}.`);
     } else {
@@ -58,18 +57,6 @@ export async function getUserInfos(user: string): Promise<User> {
         .catch(error => {
             throw new Error(`Erreur lors du chargement des données de l'utilisateur ${user} : ${error.message}`)
         });
-}
-
-export async function getConnectedUserName(): Promise<string | undefined> {
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('nextfm-session');
-    const parsed = sessionCookieSchema.safeParse(JSON.parse(sessionCookie?.value ?? '{}'));
-
-    if (!parsed.success) {
-        return;
-    }
-
-    return parsed.data.username;
 }
 
 export async function getConnectedUserInfos(): Promise<User | undefined> {

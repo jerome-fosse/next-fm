@@ -15,7 +15,7 @@ export type WriteResult =
     | { success: false, error: string };
 
 export interface Storage {
-    write(filename: string, data: string): Promise<WriteResult>;
+    write<T>(filename: string, data: T): Promise<WriteResult>;
     read<T>(filename: string): Promise<ReadResult<T>>;
 }
 

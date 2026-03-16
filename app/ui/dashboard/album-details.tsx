@@ -27,7 +27,7 @@ const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
     }
 
     const url = album.origin === DISCOGS ?
-        album.images?.filter(image => image.type === 'primary').at(0)?.uri ?? "/images/image-not-found.png" :
+        album.images?.filter(image => image.type === 'primary').at(0)?.uri ?? album.images?.at(0)?.uri ?? "/images/image-not-found.png" :
         album.images?.filter(image => image.size === 'large').at(0)?.uri ?? "/images/image-not-found.png";
 
     return (

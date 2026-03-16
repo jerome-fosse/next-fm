@@ -1,9 +1,12 @@
+import {Album, AlbumShort} from "@/app/types/albums";
+
 export type Session = {
     user: string,
     key: string,
     subscriber: string,
     createdAt: string,
     lastLoginAt?: string,
+    lastAlbums?: AlbumShort[],
 }
 
 export type User = {

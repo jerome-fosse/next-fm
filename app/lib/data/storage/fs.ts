@@ -10,11 +10,11 @@ function isFileDoesNotExistError(error: unknown): error is NodeJS.ErrnoException
 export class FsStorage implements Storage {
     constructor(private readonly basePath: string) {}
 
-    async write(filename: string, data: string): Promise<WriteResult> {
+    async write<T>(filename: string, data: T): Promise<WriteResult> {
         try {
             const absolutePath = path.resolve(process.cwd(), this.basePath);
             await fs.mkdir(absolutePath, {recursive: true});
-            await fs.writeFile(path.join(absolutePath, `${filename}.json`), data);
+            await fs.writeFile(path.join(absolutePath, `${filename}.json`), JSON.stringify(data));
             return { success: true};
         } catch (error) {
             const message = `Erreur lors de l'écriture du fichier ${filename}.json${error instanceof Error ? ': ' + error.message : '.'}`;
