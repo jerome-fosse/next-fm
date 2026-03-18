@@ -3,7 +3,7 @@
 import {memo, useState} from "react";
 import {Album} from "@/app/types/albums";
 import Image from "next/image";
-import {DISCOGS} from "@/app/types/common";
+import {Origin} from "@/app/types/common";
 import {displayTimeToSeconds, secondsToDisplayTime} from "@/app/lib/utils/duration";
 import EditableText from "@/app/ui/common/editable-text";
 import {logger} from "@/app/lib/utils/logger";
@@ -26,7 +26,7 @@ const AlbumDetails = memo(function ShowAlbumDetails({className, album}: Props) {
         setDurations(newDurations);
     }
 
-    const url = album.origin === DISCOGS ?
+    const url = album.origin === Origin.Discogs ?
         album.images?.filter(image => image.type === 'primary').at(0)?.uri ?? album.images?.at(0)?.uri ?? "/images/image-not-found.png" :
         album.images?.filter(image => image.size === 'large').at(0)?.uri ?? "/images/image-not-found.png";
 

@@ -1,4 +1,5 @@
 import {
+    DiscogsArtistInfos,
     DiscogsMaster,
     DiscogsRelease,
     DiscogsSearchParams,
@@ -19,6 +20,7 @@ export interface Client {
     search(params: DiscogsSearchParams): Promise<DiscogsSearchResponse>,
     masterReleaseById(id: number): Promise<DiscogsMaster>,
     releaseById(id: number): Promise<DiscogsRelease>,
+    artistById(id: number): Promise<DiscogsArtistInfos>,
 }
 
 export class DiscogsClient implements Client {
@@ -72,6 +74,19 @@ export class DiscogsClient implements Client {
                     throw new Error(`Release with id ${id} not found`)
                 } else {
                     throw new Error(`Unexpected error when fetching release with id ${id}`)
+                }
+            });
+    }
+
+    public async artistById(id: number): Promise<DiscogsArtistInfos> {
+        return this.apiClient.get<DiscogsArtistInfos>(`/artists/${id}`)
+            .then(r => r.data)
+            .catch((error) => {
+                logger.error("Discogs: Error fetching artist: ", `id=${id}`, `error=${error}`);
+                if (axios.isAxiosError(error) && error.response?.status === 404) {
+                    throw new Error(`Artist with id ${id} not found`)
+                } else {
+                    throw new Error(`Unexpected error when fetching artist with id ${id}`)
                 }
             });
     }

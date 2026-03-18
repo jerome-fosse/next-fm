@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {Client, DiscogsClient} from "@/app/lib/data/http/discogs/api/client";
 import axios from "axios";
-import type {DiscogsMaster} from "@/app/lib/data/http/discogs";
+import type {DiscogsArtistInfos, DiscogsMaster} from "@/app/lib/data/http/discogs";
 
 vi.mock("axios");
 
@@ -83,6 +83,51 @@ describe("DiscogsClient - releaseById", () => {
 
         await expect(client.releaseById(123))
             .rejects.toThrow("Unexpected error when fetching release with id 123");
+    });
+});
+
+
+describe("DiscogsClient - artistById", () => {
+    let client: Client;
+
+    beforeEach(() => {
+        mockGet.mockReset();
+        client = new DiscogsClient({
+            token: "test-token",
+            baseUrl: "https://api.discogs.com",
+            timeout: 5000,
+            userAgent: "TestAgent/1.0",
+        });
+    });
+
+    it("should return an artist by its id", async () => {
+        const mockArtist: Partial<DiscogsArtistInfos> = {
+            id: 108713,
+            name: "Nickelback",
+        };
+        mockGet.mockResolvedValue({ data: mockArtist, status: 200 });
+
+        const response = await client.artistById(108713);
+
+        expect(mockGet).toHaveBeenCalledWith("/artists/108713");
+        expect(response.id).toBe(108713);
+        expect(response.name).toBe("Nickelback");
+    });
+
+    it("should throw 'not found' error on 404", async () => {
+        mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 404 } });
+        vi.mocked(axios.isAxiosError).mockReturnValue(true);
+
+        await expect(client.artistById(999))
+            .rejects.toThrow("Artist with id 999 not found");
+    });
+
+    it("should throw a generic error on other failures", async () => {
+        mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 500 } });
+        vi.mocked(axios.isAxiosError).mockReturnValue(true);
+
+        await expect(client.artistById(108713))
+            .rejects.toThrow("Unexpected error when fetching artist with id 108713");
     });
 });
 

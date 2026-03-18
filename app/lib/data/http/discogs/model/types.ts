@@ -155,6 +155,27 @@ export type DiscogsVideo = {
     embed: boolean
 }
 
+export type DiscogsArtistMember = {
+    id: number
+    name: string
+    active: boolean
+    resource_url: string
+}
+
+export type DiscogsArtistInfos = {
+    id: number
+    name: string
+    namevariations: string[]
+    profile: string
+    urls: string[]
+    uri: string
+    resource_url: string
+    releases_url: string
+    data_quality: string
+    images: DiscogsImage[]
+    members?: DiscogsArtistMember[]
+}
+
 // Search parameters
 export type DiscogsSearchParams = {
     // Your search query. (optional)<br>

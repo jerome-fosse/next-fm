@@ -3,6 +3,7 @@ import {sessionCookieSchema} from "@/app/schemas/authent";
 import {Session} from "@/app/types/authent";
 import {getStorage} from "@/app/lib/data/storage";
 import {AlbumShort} from "@/app/types/albums";
+import {logger} from "@/app/lib/utils/logger";
 
 export async function getConnectedUserName(): Promise<string | undefined> {
     const cookieStore = await cookies();
@@ -45,10 +46,6 @@ export async function addSearchedAlbumToCurrentSession(albumToAdd: AlbumShort): 
         if (isSameAlbum(album, albumToAdd)) {
             return false;
         }
-    }
-
-    if (albums.length >= 10) {
-        albums.pop();
     }
 
     albums.unshift(albumToAdd);

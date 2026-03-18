@@ -1,8 +1,7 @@
-export const DISCOGS = "Discogs";
-export const LASTFM = "Last.fm";
-export const ORIGINS = [DISCOGS, LASTFM] as const;
-
-export type Origin = typeof DISCOGS | typeof LASTFM;
+export enum Origin {
+    Discogs = "Discogs",
+    LastFm = "Last.fm"
+}
 
 export type Pagination = {
     page: number,

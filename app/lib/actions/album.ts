@@ -2,12 +2,13 @@
 
 import {fetchDiscogsMasterReleaseById} from "@/app/lib/services/discogs";
 import {Album} from "@/app/types/albums";
-import {DISCOGS, LASTFM, Origin, ORIGINS} from "@/app/types/common";
+import {Origin} from "@/app/types/common";
 import {fetchLastfmAlbumByIdOrNameAndArtist} from "@/app/lib/services/lastfm";
 import {logger} from "@/app/lib/utils/logger";
 import {z} from "zod";
 import {addSearchedAlbumToCurrentSession} from "@/app/lib/services/session";
 import {albumToAlbumShort} from "@/app/types/mapper/album";
+import {topArtistsManager} from "@/app/lib/events/bus";
 
 export type FetchAlbumParams = {
     id?: string,
@@ -28,9 +29,9 @@ export async function fetchAlbumAction(params: FetchAlbumParams): Promise<FetchA
         idLastfm: z.string().optional(),
         title: z.string().optional(),
         artist: z.string().optional(),
-        origin: z.enum(ORIGINS),
+        origin: z.enum(Origin),
     }).refine(data => {
-            return data.origin === LASTFM ?
+            return data.origin === Origin.LastFm ?
                 data.idLastfm || (data.title && data.artist) :
                 true;
         },
@@ -50,18 +51,19 @@ export async function fetchAlbumAction(params: FetchAlbumParams): Promise<FetchA
     try {
         let album: Album;
         switch (parsed.data.origin) {
-            case DISCOGS:
+            case Origin.Discogs:
                 if (!parsed.data.idDiscogs) {
                     return {success: false, error: "L'id est obligatoire pour Discogs."};
                 }
                 album = await fetchDiscogsMasterReleaseById(parsed.data.idDiscogs);
                 break;
-            case LASTFM:
+            case Origin.LastFm:
                 album = await fetchLastfmAlbumByIdOrNameAndArtist(parsed.data.idLastfm, parsed.data.title, parsed.data.artist);
                 break;
         }
 
         await addSearchedAlbumToCurrentSession(albumToAlbumShort(album));
+        topArtistsManager.incrementArtistScore(album.artists[0], 1)
 
         return {success: true, album};
     } catch (error) {

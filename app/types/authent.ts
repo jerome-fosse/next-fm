@@ -1,4 +1,5 @@
-import {Album, AlbumShort} from "@/app/types/albums";
+import {AlbumShort} from "@/app/types/albums";
+import {ArtistTopEntry} from "@/app/types/stats";
 
 export type Session = {
     user: string,
@@ -7,6 +8,7 @@ export type Session = {
     createdAt: string,
     lastLoginAt?: string,
     lastAlbums?: AlbumShort[],
+    topArtists?: ArtistTopEntry[],
 }
 
 export type User = {

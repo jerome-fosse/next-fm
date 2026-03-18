@@ -6,7 +6,7 @@ import {SiDiscogs} from "react-icons/si";
 import {ImLastfm2} from "react-icons/im";
 import {useState, useTransition} from "react";
 import {fetchAlbumAction, FetchAlbumResult} from "@/app/lib/actions/album";
-import {DISCOGS, LASTFM} from "@/app/types/common";
+import {Origin} from "@/app/types/common";
 import AlbumDialog from "@/app/ui/dashboard/album-dialog";
 import AlertDialog from "@/app/ui/common/alert-dialog";
 
@@ -26,10 +26,10 @@ export default function AlbumThumbnail({album, showOriginButton = true, handleIm
         startTransition(async () => {
             let data: FetchAlbumResult;
             switch (album.origin) {
-                case DISCOGS:
+                case Origin.Discogs:
                     data = await fetchAlbumAction({id: album.id, origin: album.origin});
                     break;
-                case LASTFM:
+                case Origin.LastFm:
                     data = await fetchAlbumAction({
                         id: album.id,
                         title: album.title,
@@ -65,8 +65,8 @@ export default function AlbumThumbnail({album, showOriginButton = true, handleIm
 
     const originButton = (album: AlbumShort) => {
         switch (album.origin) {
-            case "Discogs": return <SiDiscogs className="w-4 h-4"/>
-            case "Last.fm": return <ImLastfm2 className="w-4 h-4"/>
+            case Origin.Discogs: return <SiDiscogs className="w-4 h-4"/>
+            case Origin.LastFm: return <ImLastfm2 className="w-4 h-4"/>
         }
     }
 

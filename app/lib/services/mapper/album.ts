@@ -2,7 +2,7 @@ import {DiscogsMaster, DiscogsSearchResultItem} from "@/app/lib/data/http/discog
 import {Album, AlbumShort} from "@/app/types/albums";
 import {LastFmAlbum, LastFmAlbumInfos, LastFmTag, LastFmTrack} from "@/app/lib/data/http/lastfm";
 import {displayTimeToSeconds} from "@/app/lib/utils/duration";
-import {logger} from "@/app/lib/utils/logger";
+import {Origin} from "@/app/types/common";
 
 export function discogsSearchResultItemToAlbumShort(item: DiscogsSearchResultItem): AlbumShort {
     const [artistName, albumTitle] = item.title.split(' - ')
@@ -11,8 +11,8 @@ export function discogsSearchResultItemToAlbumShort(item: DiscogsSearchResultIte
         id: item.id.toString(10),
         title: albumTitle,
         year: item.year,
-        artist: {id: '', name: artistName, roles: ''},
-        origin: "Discogs",
+        artist: {id: '', name: artistName, origin: Origin.Discogs, roles: ''},
+        origin: Origin.Discogs,
         url: `https://www.discogs.com${item.uri}`,
         images: [
             {size: "small", uri: item.thumb},
@@ -25,8 +25,8 @@ export function lastfmSearchResultItemToAlbumShort(item: LastFmAlbumInfos): Albu
     return {
         id: item.mbid,
         title: item.name,
-        artist: {id: '', name: item.artist, roles: ''},
-        origin: "Last.fm",
+        artist: {id: '', name: item.artist, origin: Origin.LastFm, roles: ''},
+        origin: Origin.LastFm,
         url: item.url,
         images: item.image.map((image) =>
             ({
@@ -45,10 +45,10 @@ export function discogsMasterToAlbum(item: DiscogsMaster): Album {
         title: track.title,
         duration: displayTimeToSeconds(track.duration),
         artists: track.artists?.map(artist => ({
-            id: artist.id.toString(10), name: normalizeArtistName(artist.name), roles: artist.role ?? ""
+            id: artist.id.toString(10), name: normalizeArtistName(artist.name), origin: Origin.Discogs, roles: artist.role ?? ""
         })) ?? [],
         extraArtists: track.extraartists?.map(artist => ({
-            id: artist.id.toString(10), name: normalizeArtistName(artist.name), roles: artist.role ?? ""
+            id: artist.id.toString(10), name: normalizeArtistName(artist.name), origin: Origin.Discogs, roles: artist.role ?? ""
         })) ?? [],
     }));
 
@@ -57,12 +57,12 @@ export function discogsMasterToAlbum(item: DiscogsMaster): Album {
     return {
         id: item.id.toString(10),
         title: item.title,
-        origin: "Discogs",
+        origin: Origin.Discogs,
         genres: item.genres,
         styles: item.styles,
         year: item.year,
         artists: item.artists.map(artist => ({
-            id: artist.id.toString(10), name: normalizeArtistName(artist.name), roles: artist.role ?? ""
+            id: artist.id.toString(10), name: normalizeArtistName(artist.name), origin: Origin.Discogs, roles: artist.role ?? ""
         })),
         tracks: tracks,
         images: item.images.map(image => ({
@@ -90,14 +90,14 @@ export function lastfmAlbumToAlbum(item: LastFmAlbum): Album {
                 position: track["@attr"].rank.toString(10),
                 title: track.name,
                 duration: track.duration ?? undefined,
-                artists: [{id: track.artist.mbid, name: track.artist.name, roles: ''}],
+                artists: [{id: track.artist.mbid, name: track.artist.name, origin: Origin.LastFm, roles: ''}],
             }))
         } else {
             return [{
                 position: tracks["@attr"].rank.toString(10),
                 title: tracks.name,
                 duration: tracks.duration ?? undefined,
-                artists: [{id: tracks.artist.mbid, name: tracks.artist.name, roles: ''}],
+                artists: [{id: tracks.artist.mbid, name: tracks.artist.name, origin: Origin.LastFm, roles: ''}],
             }]
         }
     }
@@ -108,10 +108,10 @@ export function lastfmAlbumToAlbum(item: LastFmAlbum): Album {
     return {
         id: item.id ?? '',
         title: item.name,
-        origin: "Last.fm",
+        origin: Origin.LastFm,
         tags: mapTagsToStringArray(item.tags.tag),
         released: item.releasedate,
-        artists: [{id: '', name: item.artist, roles: ''}],
+        artists: [{id: '', name: item.artist, origin: Origin.LastFm, roles: ''}],
         tracks: tracks,
         images: item.image.map(image => ({
             size: image.size,

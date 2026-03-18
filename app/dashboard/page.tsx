@@ -2,8 +2,8 @@ import {requestAuthorizationFromLastFM} from '@/app/lib/actions/authent';
 import {PiChartBar, PiHeadphones, PiShareNetwork, PiWaveform} from 'react-icons/pi';
 import Logo from "@/app/ui/common/logo";
 import {getCurrentSession} from "@/app/lib/services/session";
-import Image from "next/image";
 import AlbumThumbnail from "@/app/ui/dashboard/album-thumb";
+import ArtistAvatar from "@/app/ui/dashboard/artist-avatar";
 
 const features = [
     { icon: PiHeadphones,   title: 'Écoutez',    description: 'Recherchez vos albums via Discogs ou Last.fm' },
@@ -34,11 +34,8 @@ export default async function Page() {
                         <h2 className="font-bold">Top artistes</h2>
                         <div className="border border-gray-300 rounded-md shadow-md p-4">
                             <div className="flex gap-4">
-                                {Array.from({ length: 10 }).map((_, i) => (
-                                    <div key={i} className="flex flex-col gap-2 animate-pulse">
-                                        <div className="w-20 h-20 bg-base-300 rounded-full" />
-                                        <div className="w-20 h-2 bg-base-300 rounded" />
-                                    </div>
+                                {session.topArtists?.map((topEntry, i) => (
+                                    <ArtistAvatar key={`top-artist-${i}`} topEntry={topEntry} />
                                 ))}
                             </div>
                         </div>
